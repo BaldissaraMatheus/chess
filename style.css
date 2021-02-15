@@ -52,3 +52,11 @@
 .piece {
 	font-size: calc(600px/8 - 20px);
 }
+
+.piece--upper {
+	color: black;
+}
+
+.piece--lower {
+	color: whitesmoke;
+}
