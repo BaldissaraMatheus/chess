@@ -51,6 +51,7 @@
 
 .piece {
 	font-size: calc(600px/8 - 20px);
+	pointer-events: none
 }
 
 .piece--upper {

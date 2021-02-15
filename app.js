@@ -1,5 +1,7 @@
 window.onload = () => {
 	setupInitialPiecesPositions();
+	const squares = Array.from(document.getElementsByClassName('square'));
+	squares.forEach(square => square.addEventListener('click', event => handleClickOnSquare(event)));
 }
 
 const setupInitialPiecesPositions = () => {
@@ -13,6 +15,7 @@ const setupInitialPiecesPositions = () => {
 			const piece = pieces[i];
 			const pieceDomElement = document.createElement('div');
 			pieceDomElement.setAttribute('class', `piece piece--${type} fas fa-chess-${piece}`);
+			pieceDomElement.setAttribute('id', piece);
 			document.getElementById(id).appendChild(pieceDomElement);
 		});
 	}
@@ -28,3 +31,13 @@ const setupInitialPiecesPositions = () => {
 	setPieces(1, borderPieces, 'lower');
 }
 
+const handleClickOnSquare = event => {
+	const squareId = event.target.id;
+	if (squareId === undefined) {
+		return;
+	}
+	const domElement = document.getElementById(squareId);
+	const childElement = domElement.firstChild;
+	const currentPiece = childElement && childElement.id;
+	console.log(`Peça na coordenada ${squareId}: ${currentPiece}`);
+}
