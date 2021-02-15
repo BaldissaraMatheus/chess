@@ -33,9 +33,6 @@ const setupInitialPiecesPositions = () => {
 
 const handleClickOnSquare = event => {
 	const squareId = event.target.id;
-	if (squareId === undefined) {
-		return;
-	}
 	const domElement = document.getElementById(squareId);
 	const childElement = domElement.firstChild;
 	const currentPiece = childElement && childElement.id;
