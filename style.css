@@ -1,0 +1,54 @@
+.bg {
+	background-color: #F8F8FF;
+}
+
+.full-width {
+	width: 100vw;
+}
+
+.full-height {
+	height: 100vh;
+}
+
+.flex {
+	display: flex;
+}
+
+.flex--center {
+	align-items: center;
+	justify-content: center;
+}
+
+.flex--fd-column {
+	flex-direction: column;
+}
+
+.title {
+	color: black;
+	font-family: 'Crimson Text', serif;
+	font-style: italic;
+	font-size: 2rem;
+}
+
+.board {
+	width: 600px;
+	height: 600px;
+	background-color: tomato;
+}
+
+.square {
+	width: calc(600px/8);
+	height: calc(600px/8);
+}
+
+.square--light {
+	background-color: #EFD9B5;
+}
+
+.square--dark {
+	background-color: #B58863;
+}
+
+.piece {
+	font-size: calc(600px/8 - 20px);
+}
