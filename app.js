@@ -20,8 +20,7 @@ const setupInitialPiecesPositions = () => {
 		});
 	}
 	const pawns = new Array(8)
-		.fill(undefined)
-		.map(() => 'pawn');
+		.fill('pawn');
 	const borderPieces = [
 		'rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'
 	];
