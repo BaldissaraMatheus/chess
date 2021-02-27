@@ -39,6 +39,8 @@
 .square {
 	width: calc(600px/8);
 	height: calc(600px/8);
+	border: none;
+	box-sizing: border-box;
 }
 
 .square--light {
@@ -47,6 +49,11 @@
 
 .square--dark {
 	background-color: #B58863;
+}
+
+.square[highlighted=true] {
+	box-sizing: border-box;
+	border: 5px solid crimson;
 }
 
 .piece {
