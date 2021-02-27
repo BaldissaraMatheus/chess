@@ -25,7 +25,8 @@ const insertIntoRank = (rank, pieces, type) => {
 		const piece = pieces[i];
 		const pieceDomElement = document.createElement('div');
 		pieceDomElement.setAttribute('class', `piece piece--${type} fas fa-chess-${piece}`);
-		pieceDomElement.setAttribute('id', piece);
+		pieceDomElement.setAttribute('piece', piece);
+		pieceDomElement.setAttribute('player', type);
 		document.getElementById(id).appendChild(pieceDomElement);
 	});
 }
@@ -39,6 +40,7 @@ const handleClickOnSquare = event => {
 	const squareId = event.target.id;
 	const domElement = document.getElementById(squareId);
 	const childElement = domElement.firstChild;
-	const currentPiece = childElement && childElement.id;
-	console.log(`Peça na coordenada ${squareId}: ${currentPiece}`);
+	const piece = childElement && childElement.attributes.piece.value;
+	const player = piece && childElement.attributes.player.value;
+	console.log(`Peça na coordenada ${squareId}: ${piece} ${player}`);
 }
