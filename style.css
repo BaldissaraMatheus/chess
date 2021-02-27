@@ -54,10 +54,10 @@
 	pointer-events: none
 }
 
-.piece--upper {
+.piece--black {
 	color: black;
 }
 
-.piece--lower {
+.piece--white {
 	color: whitesmoke;
 }

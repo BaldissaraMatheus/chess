@@ -5,29 +5,30 @@ window.onload = () => {
 }
 
 const setupInitialPiecesPositions = () => {
-	const initialCharCode = 'a'.charCodeAt(0);
-	const files = new Array(8)
-		.fill(undefined)
-		.map((value, i) => String.fromCharCode(initialCharCode + i));
-	const setPieces = (rank, pieces, type) => {
-		files.forEach((file, i) => {
-			const id = `${file}${rank}`;
-			const piece = pieces[i];
-			const pieceDomElement = document.createElement('div');
-			pieceDomElement.setAttribute('class', `piece piece--${type} fas fa-chess-${piece}`);
-			pieceDomElement.setAttribute('id', piece);
-			document.getElementById(id).appendChild(pieceDomElement);
-		});
-	}
 	const pawns = new Array(8)
 		.fill('pawn');
 	const borderPieces = [
 		'rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'
 	];
-	setPieces(8, borderPieces, 'upper');
-	setPieces(7, pawns, 'upper');
-	setPieces(2, pawns, 'lower');
-	setPieces(1, borderPieces, 'lower');
+	insertIntoRank(8, borderPieces, 'black');
+	insertIntoRank(7, pawns, 'black');
+	insertIntoRank(2, pawns, 'white');
+	insertIntoRank(1, borderPieces, 'white');
+}
+
+const insertIntoRank = (rank, pieces, type) => {
+	const initialCharCode = 'a'.charCodeAt(0);
+	const files = new Array(8)
+		.fill(undefined)
+		.map((value, i) => String.fromCharCode(initialCharCode + i));
+	files.forEach((file, i) => {
+		const id = `${file}${rank}`;
+		const piece = pieces[i];
+		const pieceDomElement = document.createElement('div');
+		pieceDomElement.setAttribute('class', `piece piece--${type} fas fa-chess-${piece}`);
+		pieceDomElement.setAttribute('id', piece);
+		document.getElementById(id).appendChild(pieceDomElement);
+	});
 }
 
 const handleClickOnSquare = event => {
