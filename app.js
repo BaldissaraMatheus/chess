@@ -1,7 +1,6 @@
 window.onload = () => {
 	setupInitialPiecesPositions();
-	const squares = Array.from(document.getElementsByClassName('square'));
-	squares.forEach(square => square.addEventListener('click', event => handleClickOnSquare(event)));
+	addEventListenerOnSquares();
 }
 
 const setupInitialPiecesPositions = () => {
@@ -29,6 +28,11 @@ const insertIntoRank = (rank, pieces, type) => {
 		pieceDomElement.setAttribute('id', piece);
 		document.getElementById(id).appendChild(pieceDomElement);
 	});
+}
+
+const addEventListenerOnSquares = () => {
+	const squares = Array.from(document.getElementsByClassName('square'));
+	squares.forEach(square => square.addEventListener('click', event => handleClickOnSquare(event)));
 }
 
 const handleClickOnSquare = event => {
