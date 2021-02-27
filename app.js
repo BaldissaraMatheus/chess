@@ -26,18 +26,17 @@ const setupInitialPiecesPositions = () => {
 	insertIntoRank(1, borderPieces, 'white');
 };
 
-const insertIntoRank = (rank, pieces, type) => {
+const insertIntoRank = (rank, pieces, player) => {
 	FILES.forEach((file, i) => {
 		const id = `${file}${rank}`;
 		const piece = pieces[i];
 		const pieceDomElement = document.createElement('div');
-		pieceDomElement.setAttribute('class', `piece piece--${type} fas fa-chess-${piece}`);
+		pieceDomElement.setAttribute('class', `piece piece--${player} fas fa-chess-${piece}`);
 		pieceDomElement.setAttribute('piece', piece);
-		pieceDomElement.setAttribute('player', type);
+		pieceDomElement.setAttribute('player', player);
 		document.getElementById(id).appendChild(pieceDomElement);
 	});
 };
-
 
 const addEventListenerOnSquares = () => {
 	const squares = Array.from(document.getElementsByClassName('square'));
