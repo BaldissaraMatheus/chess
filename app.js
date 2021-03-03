@@ -40,7 +40,12 @@ const insertIntoRank = (rank, pieces, player) => {
 
 const addEventListenerOnSquares = () => {
 	const squares = Array.from(document.getElementsByClassName('square'));
-	squares.forEach(square => square.addEventListener('click', event => handleClickOnSquare(event)));
+	squares.forEach(square => square.addEventListener('mousedown', event => handleClickOnSquare(event)));
+	squares.forEach(square => square.addEventListener('mouseup', event => clearBoard(event)));
+};
+
+const clearBoard = event => {
+	cleanHighlightedSquares();
 };
 
 /** 
@@ -70,8 +75,8 @@ const removeSelectedPiece = () => {
 };
 
 const cleanHighlightedSquares = () => {
-	 document
-	 	.querySelectorAll('[highlighted]')
+	document
+		.querySelectorAll('[highlighted]')
 		.forEach(el => el.setAttribute('highlighted', false));
 };
 
@@ -85,12 +90,27 @@ const getPieceFromCoordinates = (coordinates) => {
 const getHighlightAvailableMovesFnBySelectedPiece = (piece) => {
 	const MapPiescesToAvailableMovesFn = {
 		pawn: highlightPawnAvailableMoves,
+		knight: highlightKnightAvailableMoves
 	};
 	return MapPiescesToAvailableMovesFn[piece] || (() => console.log('A peça selecionada não possui uma função de movimento implementada'));
 };
 
+const highlightKnightAvailableMoves = (player, coordinates) => {
+	const [file, rank] = coordinates.split('');
+	const newRank = Number.parseInt(rank) + 2;
+	const newFileIndex = FILES.indexOf(file) - 1;
+	const newFile = FILES[newFileIndex];
+	console.log(file, newFile)
+	highlightSquare(`${FILES[FILES.indexOf(file) - 1]}${Number.parseInt(rank) + 2}`)	
+	highlightSquare(`${FILES[FILES.indexOf(file) + 1]}${Number.parseInt(rank) + 2}`)
+	// RANKS
+	// 	.filter(rank => rank >= startRank)
+	// 	.filter(rank => getPieceFromCoordinates(`${file}${rank}`) === null)
+	// 	.forEach(rank => highlightSquare(`${file}${rank-2}`));
+};
+
 const highlightPawnAvailableMoves = (player, coordinates) => {
-	const [ file, startRank ] = coordinates.split('');
+	const [file, startRank] = coordinates.split('');
 	RANKS
 		.filter(rank => rank >= startRank)
 		.filter(rank => getPieceFromCoordinates(`${file}${rank}`) === null)
@@ -99,7 +119,12 @@ const highlightPawnAvailableMoves = (player, coordinates) => {
 
 const highlightSquare = (coordinate) => {
 	const element = document.getElementById(coordinate);
+	if (element === null) {
+		console.log(`Essa posicao nao existe: ${coordinate}`);
+
+	}
+	console.log(element);
 	const elementToInsert = element.cloneNode(true);
 	elementToInsert.setAttribute('highlighted', true);
 	element.parentNode.replaceChild(elementToInsert, element);
-}; 
+};
