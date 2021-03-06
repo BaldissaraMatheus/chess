@@ -101,8 +101,15 @@ const highlightKnightAvailableMoves = (player, coordinates) => {
 	const newFileIndex = FILES.indexOf(file) - 1;
 	const newFile = FILES[newFileIndex];
 	console.log(file, newFile)
-	highlightSquare(`${FILES[FILES.indexOf(file) - 1]}${Number.parseInt(rank) + 2}`)	
-	highlightSquare(`${FILES[FILES.indexOf(file) + 1]}${Number.parseInt(rank) + 2}`)
+	highlightSquare(`${FILES[FILES.indexOf(file) - 1]}${Number.parseInt(rank) - 2}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) + 1]}${Number.parseInt(rank) + 2}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) + 1]}${Number.parseInt(rank) - 2}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) - 1]}${Number.parseInt(rank) + 2}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) - 2]}${Number.parseInt(rank) - 1}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) + 2]}${Number.parseInt(rank) + 1}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) + 2]}${Number.parseInt(rank) - 1}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) - 2]}${Number.parseInt(rank) + 1}`);
+
 	// RANKS
 	// 	.filter(rank => rank >= startRank)
 	// 	.filter(rank => getPieceFromCoordinates(`${file}${rank}`) === null)
@@ -121,6 +128,7 @@ const highlightSquare = (coordinate) => {
 	const element = document.getElementById(coordinate);
 	if (element === null) {
 		console.log(`Essa posicao nao existe: ${coordinate}`);
+		return;
 
 	}
 	console.log(element);
