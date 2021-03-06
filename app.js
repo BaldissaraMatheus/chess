@@ -44,9 +44,6 @@ const addEventListenerOnSquares = () => {
 	squares.forEach(square => square.addEventListener('mouseup', event => handleMouseUpOnSquare(event)));
 };
 
-/** 
- * @param { Event } event
- */
 const handleMouseUpOnSquare = event => {
 	const isSquareAvailableMove = event.target.attributes.highlighted
 		&& Boolean(event.target.attributes.highlighted.value) === true;
@@ -66,9 +63,6 @@ const handleMouseUpOnSquare = event => {
 	cleanHighlightedSquares();
 };
 
-/** 
- * @param { Event } event
- */
 const handleMouseDownOnSquare = event => {
 	event.preventDefault() // Impede que tabuleiro seja arrastado junto
 	removeSelectedPiece();
