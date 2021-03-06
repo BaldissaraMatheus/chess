@@ -1,7 +1,6 @@
 const FILES = new Array(8).fill(undefined).map((value, i) => String.fromCharCode('a'.charCodeAt(0) + i));
 const RANKS = new Array(8).fill(undefined).map((_, index) => index + 1);
 
-// TODO limpar highlightedMoves e selectedPiece no release do mouse
 // TODO fazer toda a movimentacao do pawn
 // TODO implementar movimentacao por vez do jogador
 // TODO implementar movimentacao de ataque
@@ -35,7 +34,7 @@ const insertIntoRank = (rank, pieces, player) => {
 		pieceDomElement.setAttribute('piece', piece);
 		pieceDomElement.setAttribute('player', player);
 		document.getElementById(id).appendChild(pieceDomElement);
-	});
+	});	
 };
 
 const addEventListenerOnSquares = () => {
@@ -46,15 +45,18 @@ const addEventListenerOnSquares = () => {
 
 const handleMouseUpOnSquare = event => {
 	const isSquareAvailableMove = event.target.attributes.highlighted
-		&& Boolean(event.target.attributes.highlighted.value) === true;
+		&& Boolean(event.target.attributes.highlighted.value);
 	if (isSquareAvailableMove) {
 		const selectedPiece = document.querySelector('[selected=true]');
+		// gambiarra
+		if (selectedPiece.attributes.piece.value === 'pawn') {
+			selectedPiece.setAttribute('alreadyMoved', true);
+		}
 		const newPiece = selectedPiece.cloneNode(true);
 		selectedPiece.parentNode.removeChild(selectedPiece);
-		const elementToRemove = event.target.firstChild
+		const elementToRemove = event.target.firstChild;
 		if (elementToRemove) {
-			console.log(elementToRemove);
-			const removedPiece = elementToRemove.attributes.piece.value
+			const removedPiece = elementToRemove.attributes.piece.value;
 			// TODO chamar funcao de pontuacao aqui, passando removedPiece como parametro
 			elementToRemove.parentNode.removeChild(elementToRemove);
 		}
@@ -76,8 +78,10 @@ const handleMouseDownOnSquare = event => {
 	event.target.firstChild.setAttribute('selected', true);
 	const player = event.target.firstChild.attributes.player.value;
 	console.log(`Peça na coordenada ${coordinates.toUpperCase()}: ${piece} ${player}`);
-	const hightlightAvailableMoves = getHighlightAvailableMovesFnBySelectedPiece(piece);
-	hightlightAvailableMoves(player, coordinates);
+	const hightlightAvailableMovesFn = getHighlightAvailableMovesFnBySelectedPiece(piece);
+	const alreadyMoved = event.target.firstChild.attributes.alreadyMoved
+		&& event.target.firstChild.attributes.alreadyMoved.value;
+	hightlightAvailableMovesFn(player, coordinates, alreadyMoved);
 };
 
 const removeSelectedPiece = () => {
@@ -125,18 +129,34 @@ const highlightKnightAvailableMoves = (player, coordinates) => {
 	// 	.forEach(rank => highlightSquare(`${file}${rank-2}`));
 };
 
-const highlightPawnAvailableMoves = (player, coordinates) => {
-	const [file, startRank] = coordinates.split('');
+const highlightPawnAvailableMoves = (player, coordinates, alreadyMoved) => {
+	const [startFile, startRank] = coordinates.split('');
 	const parsedRank = Number.parseInt(startRank);
-	const availableMoves = [parsedRank + 1, parsedRank + 2]
-		.map(rank => `${file}${rank}`)
+	let availableMovementMoves = [parsedRank + 1];
+	if (!alreadyMoved) {
+		availableMovementMoves.push(parsedRank + 2);
+	}
+	availableMovementMoves = availableMovementMoves
+		.map(rank => `${startFile}${rank}`)
 		.filter(coordinates => getPieceFromCoordinates(coordinates) === null);
-	availableMoves.forEach(square => highlightSquare(square));
-	// RANKS
-	// 	.filter(rank => rank >= startRank)
-	// 	.filter(rank => getPieceFromCoordinates(`${file}${rank}`) === null)
-	// 	.forEach(rank => highlightSquare(`${file}${rank}`));
+	const availableAttackMoves = [FILES.indexOf(startFile) + 1, FILES.indexOf(startFile) -1] 
+		.map(index => FILES[index])
+		.map(file => `${file}${parsedRank + 1}`)
+		.filter(coordinates => getPieceFromCoordinates(coordinates) !== null)
+		.filter(coordinates => getPlayerFromCoordinates(coordinates) !== player);
+	availableMovementMoves.forEach(square => highlightSquare(square));
+	availableAttackMoves.forEach(square => highlightSquare(square));
 };
+
+const getPlayerFromCoordinates = coordinates => {
+	const domElement = document.getElementById(coordinates);
+	if (domElement === null) {
+		return null;
+	}
+	const childElement = domElement.firstChild;
+	const player = childElement && childElement.attributes.player.value;
+	return player;
+}
 
 const highlightSquare = (coordinate) => {
 	const element = document.getElementById(coordinate);
