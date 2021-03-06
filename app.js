@@ -97,13 +97,18 @@ const cleanHighlightedSquares = () => {
 		.forEach(el => el.setAttribute('highlighted', false));
 };
 
-const getPieceFromCoordinates = (coordinates) => {
+const getPieceFromCoordinates = (coordinates, player) => {
 	const domElement = document.getElementById(coordinates);
 	if (domElement === null) {
 		return null;
 	}
 	const childElement = domElement.firstChild;
-	const piece = childElement && childElement.attributes.piece.value;
+	if (!childElement) {
+		return null;
+	}
+	const piece = player === undefined
+	? childElement && childElement.attributes.piece.value
+	: childElement && childElement.attributes.piece.value && childElement.attributes.player.value === value;
 	return piece;
 }
 
@@ -121,8 +126,15 @@ const highlightKnightAvailableMoves = (player, coordinates) => {
 	const newFileIndex = FILES.indexOf(file) - 1;
 	const newFile = FILES[newFileIndex];
 	console.log(file, newFile)
-	highlightSquare(`${FILES[FILES.indexOf(file) - 1]}${Number.parseInt(rank) + 2}`)	
-	highlightSquare(`${FILES[FILES.indexOf(file) + 1]}${Number.parseInt(rank) + 2}`)
+	highlightSquare(`${FILES[FILES.indexOf(file) - 1]}${Number.parseInt(rank) - 2}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) + 1]}${Number.parseInt(rank) + 2}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) + 1]}${Number.parseInt(rank) - 2}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) - 1]}${Number.parseInt(rank) + 2}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) - 2]}${Number.parseInt(rank) - 1}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) + 2]}${Number.parseInt(rank) + 1}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) + 2]}${Number.parseInt(rank) - 1}`);
+	highlightSquare(`${FILES[FILES.indexOf(file) - 2]}${Number.parseInt(rank) + 1}`);
+
 	// RANKS
 	// 	.filter(rank => rank >= startRank)
 	// 	.filter(rank => getPieceFromCoordinates(`${file}${rank}`) === null)
