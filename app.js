@@ -40,18 +40,37 @@ const insertIntoRank = (rank, pieces, player) => {
 
 const addEventListenerOnSquares = () => {
 	const squares = Array.from(document.getElementsByClassName('square'));
-	squares.forEach(square => square.addEventListener('mousedown', event => handleClickOnSquare(event)));
-	squares.forEach(square => square.addEventListener('mouseup', event => clearBoard(event)));
+	squares.forEach(square => square.addEventListener('mousedown', event => handleMouseDownOnSquare(event)));
+	squares.forEach(square => square.addEventListener('mouseup', event => handleMouseUpOnSquare(event)));
 };
 
-const clearBoard = event => {
+/** 
+ * @param { Event } event
+ */
+const handleMouseUpOnSquare = event => {
+	const isSquareAvailableMove = event.target.attributes.highlighted
+		&& Boolean(event.target.attributes.highlighted.value) === true;
+	if (isSquareAvailableMove) {
+		const selectedPiece = document.querySelector('[selected=true]');
+		const newPiece = selectedPiece.cloneNode(true);
+		selectedPiece.parentNode.removeChild(selectedPiece);
+		const elementToRemove = event.target.firstChild
+		if (elementToRemove) {
+			console.log(elementToRemove);
+			const removedPiece = elementToRemove.attributes.piece.value
+			// TODO chamar funcao de pontuacao aqui, passando removedPiece como parametro
+			elementToRemove.parentNode.removeChild(elementToRemove);
+		}
+		event.target.appendChild(newPiece);
+	}
 	cleanHighlightedSquares();
 };
 
 /** 
  * @param { Event } event
  */
-const handleClickOnSquare = event => {
+const handleMouseDownOnSquare = event => {
+	event.preventDefault() // Impede que tabuleiro seja arrastado junto
 	removeSelectedPiece();
 	cleanHighlightedSquares();
 	const coordinates = event.target.id;
@@ -82,6 +101,9 @@ const cleanHighlightedSquares = () => {
 
 const getPieceFromCoordinates = (coordinates) => {
 	const domElement = document.getElementById(coordinates);
+	if (domElement === null) {
+		return null;
+	}
 	const childElement = domElement.firstChild;
 	const piece = childElement && childElement.attributes.piece.value;
 	return piece;
@@ -111,20 +133,21 @@ const highlightKnightAvailableMoves = (player, coordinates) => {
 
 const highlightPawnAvailableMoves = (player, coordinates) => {
 	const [file, startRank] = coordinates.split('');
-	RANKS
-		.filter(rank => rank >= startRank)
-		.filter(rank => getPieceFromCoordinates(`${file}${rank}`) === null)
-		.forEach(rank => highlightSquare(`${file}${rank}`));
+	const parsedRank = Number.parseInt(startRank);
+	const availableMoves = [parsedRank + 1, parsedRank + 2]
+		.map(rank => `${file}${rank}`)
+		.filter(coordinates => getPieceFromCoordinates(coordinates) === null);
+	availableMoves.forEach(square => highlightSquare(square));
+	// RANKS
+	// 	.filter(rank => rank >= startRank)
+	// 	.filter(rank => getPieceFromCoordinates(`${file}${rank}`) === null)
+	// 	.forEach(rank => highlightSquare(`${file}${rank}`));
 };
 
 const highlightSquare = (coordinate) => {
 	const element = document.getElementById(coordinate);
 	if (element === null) {
-		console.log(`Essa posicao nao existe: ${coordinate}`);
-
+		return;
 	}
-	console.log(element);
-	const elementToInsert = element.cloneNode(true);
-	elementToInsert.setAttribute('highlighted', true);
-	element.parentNode.replaceChild(elementToInsert, element);
+	element.setAttribute('highlighted', true);
 };
