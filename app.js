@@ -1,12 +1,9 @@
 const FILES = new Array(8).fill(undefined).map((value, i) => String.fromCharCode('a'.charCodeAt(0) + i));
 const RANKS = new Array(8).fill(undefined).map((_, index) => index + 1);
 
-// TODO fazer toda a movimentacao do pawn
 // TODO implementar movimentacao por vez do jogador
-// TODO implementar movimentacao de ataque
 // TODO implementar pontuacao
 // TODO implementar movimentos das outras pecas
-// TODO implementar jogadas especiais
 
 window.onload = () => {
 	setupInitialPiecesPositions();
@@ -48,11 +45,7 @@ const handleMouseUpOnSquare = event => {
 		&& Boolean(event.target.attributes.highlighted.value);
 	if (isSquareAvailableMove) {
 		const selectedPiece = document.querySelector('[selected=true]');
-		// gambiarra
-		if (selectedPiece.attributes.piece.value === 'pawn') {
-			selectedPiece.setAttribute('alreadyMoved', true);
-		}
-		const newPiece = selectedPiece.cloneNode(true);
+		const clonePiece = selectedPiece.cloneNode(true);
 		selectedPiece.parentNode.removeChild(selectedPiece);
 		const elementToRemove = event.target.firstChild;
 		if (elementToRemove) {
@@ -60,6 +53,7 @@ const handleMouseUpOnSquare = event => {
 			// TODO chamar funcao de pontuacao aqui, passando removedPiece como parametro
 			elementToRemove.parentNode.removeChild(elementToRemove);
 		}
+		const newPiece = setUpSpecialMoves(clonePiece, event.target.id, clonePiece.attributes.player.value);
 		event.target.appendChild(newPiece);
 	}
 	cleanHighlightedSquares();
@@ -125,7 +119,6 @@ const highlightKnightAvailableMoves = (player, coordinates) => {
 	const newRank = Number.parseInt(rank) + 2;
 	const newFileIndex = FILES.indexOf(file) - 1;
 	const newFile = FILES[newFileIndex];
-	console.log(file, newFile)
 	highlightSquare(`${FILES[FILES.indexOf(file) - 1]}${Number.parseInt(rank) - 2}`);
 	highlightSquare(`${FILES[FILES.indexOf(file) + 1]}${Number.parseInt(rank) + 2}`);
 	highlightSquare(`${FILES[FILES.indexOf(file) + 1]}${Number.parseInt(rank) - 2}`);
@@ -170,7 +163,6 @@ const getMoveFileCoordinates = (startFile, numberOfSquares, player) => {
 	const playerVariant = player === 'white' ? 1 : -1;
 	const startFileIndex = FILES.indexOf(startFile);
 	const finalFileIndex = startFileIndex + numberOfSquares * playerVariant;
-	console.log(FILES[finalFileIndex])
 	return FILES[finalFileIndex];
 }
 
@@ -191,3 +183,18 @@ const highlightSquare = (coordinates) => {
 	}
 	element.setAttribute('highlighted', true);
 };
+
+const setUpSpecialMoves = (piece, coordinates, player) => {	
+	const newPiece = piece.cloneNode(true);
+	if (newPiece.attributes.piece.value === 'pawn') {
+		newPiece.setAttribute('alreadyMoved', true);
+	}
+	// promotion
+	const rank = coordinates[1];
+	if (player === 'white' && rank === '8') {
+		newPiece.setAttribute('piece', 'tower');
+		newPiece.classList.remove('fa-chess-pawn');
+		newPiece.classList.add('fa-chess-rook');
+	}
+	return newPiece;
+}
