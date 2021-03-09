@@ -143,22 +143,36 @@ const highlightKnightAvailableMoves = (player, coordinates) => {
 
 const highlightPawnAvailableMoves = (player, coordinates, alreadyMoved) => {
 	const [startFile, startRank] = coordinates.split('');
-	const parsedRank = Number.parseInt(startRank);
-	let availableMovementMoves = [parsedRank + 1];
+	let availableMovementMoves = [getMoveRankCoodinates(startRank, 1, player)];
 	if (!alreadyMoved) {
-		availableMovementMoves.push(parsedRank + 2);
+		availableMovementMoves.push(getMoveRankCoodinates(startRank, 2, player));
 	}
 	availableMovementMoves = availableMovementMoves
 		.map(rank => `${startFile}${rank}`)
 		.filter(coordinates => getPieceFromCoordinates(coordinates) === null);
-	const availableAttackMoves = [FILES.indexOf(startFile) + 1, FILES.indexOf(startFile) -1] 
-		.map(index => FILES[index])
-		.map(file => `${file}${parsedRank + 1}`)
+	const availableAttackMoves = [getMoveFileCoordinates(startFile, 1, player), getMoveFileCoordinates(startFile, -1, player)] 
+		.map(file => `${file}${getMoveRankCoodinates(startRank, 1, player)}`)
 		.filter(coordinates => getPieceFromCoordinates(coordinates) !== null)
 		.filter(coordinates => getPlayerFromCoordinates(coordinates) !== player);
 	availableMovementMoves.forEach(square => highlightSquare(square));
 	availableAttackMoves.forEach(square => highlightSquare(square));
 };
+
+const getMoveRankCoodinates = (startRank, numberOfSquares, player) => {
+	const playerVariant = player === 'white' ? 1 : -1;
+	const startRankNumber = typeof startRank === 'string'
+		? Number.parseInt(startRank)
+		: startRank;
+	return startRankNumber + numberOfSquares * playerVariant;
+}
+
+const getMoveFileCoordinates = (startFile, numberOfSquares, player) => {
+	const playerVariant = player === 'white' ? 1 : -1;
+	const startFileIndex = FILES.indexOf(startFile);
+	const finalFileIndex = startFileIndex + numberOfSquares * playerVariant;
+	console.log(FILES[finalFileIndex])
+	return FILES[finalFileIndex];
+}
 
 const getPlayerFromCoordinates = coordinates => {
 	const domElement = document.getElementById(coordinates);
@@ -170,8 +184,8 @@ const getPlayerFromCoordinates = coordinates => {
 	return player;
 }
 
-const highlightSquare = (coordinate) => {
-	const element = document.getElementById(coordinate);
+const highlightSquare = (coordinates) => {
+	const element = document.getElementById(coordinates);
 	if (element === null) {
 		return;
 	}
