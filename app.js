@@ -31,7 +31,7 @@ const insertIntoRank = (rank, pieces, player) => {
 		pieceDomElement.setAttribute('piece', piece);
 		pieceDomElement.setAttribute('player', player);
 		document.getElementById(id).appendChild(pieceDomElement);
-	});	
+	});
 };
 
 const addEventListenerOnSquares = () => {
@@ -42,8 +42,8 @@ const addEventListenerOnSquares = () => {
 
 const handleMouseUpOnSquare = event => {
 	// https://www.samanthaming.com/tidbits/19-2-ways-to-convert-to-boolean/
-	const isSquareAvailableMove = event.target.attributes.highlighted
-		&& !!event.target.attributes.highlighted.value;
+	const isSquareAvailableMove = event.target.attributes.highlighted &&
+		!!event.target.attributes.highlighted.value;
 	if (isSquareAvailableMove) {
 		const selectedPiece = document.querySelector('[selected=true]');
 		const clonePiece = selectedPiece.cloneNode(true);
@@ -74,8 +74,8 @@ const handleMouseDownOnSquare = event => {
 	const player = event.target.firstChild.attributes.player.value;
 	console.log(`Peça na coordenada ${coordinates.toUpperCase()}: ${piece} ${player}`);
 	const hightlightAvailableMovesFn = getHighlightAvailableMovesFnBySelectedPiece(piece);
-	const alreadyMoved = event.target.firstChild.attributes.alreadyMoved
-		&& event.target.firstChild.attributes.alreadyMoved.value;
+	const alreadyMoved = event.target.firstChild.attributes.alreadyMoved &&
+		event.target.firstChild.attributes.alreadyMoved.value;
 	hightlightAvailableMovesFn(player, coordinates, alreadyMoved);
 };
 
@@ -89,7 +89,7 @@ const removeSelectedPiece = () => {
 const cleanHighlightedSquares = () => {
 	document
 		.querySelectorAll('[highlighted]')
-		.forEach(el => el.setAttribute('highlighted', false));
+		.forEach(el => el.removeAttribute('highlighted'));
 };
 
 const getPieceFromCoordinates = (coordinates, player) => {
@@ -101,9 +101,9 @@ const getPieceFromCoordinates = (coordinates, player) => {
 	if (!childElement) {
 		return null;
 	}
-	const piece = player === undefined
-	? childElement && childElement.attributes.piece.value
-	: childElement && childElement.attributes.piece.value && childElement.attributes.player.value === value;
+	const piece = player === undefined ?
+		childElement && childElement.attributes.piece.value :
+		childElement && childElement.attributes.piece.value && childElement.attributes.player.value === value;
 	return piece;
 }
 
@@ -116,23 +116,20 @@ const getHighlightAvailableMovesFnBySelectedPiece = (piece) => {
 };
 
 const highlightKnightAvailableMoves = (player, coordinates) => {
-	const [file, rank] = coordinates.split('');
-	const newRank = Number.parseInt(rank) + 2;
-	const newFileIndex = FILES.indexOf(file) - 1;
-	const newFile = FILES[newFileIndex];
-	highlightSquare(`${FILES[FILES.indexOf(file) - 1]}${Number.parseInt(rank) - 2}`);
-	highlightSquare(`${FILES[FILES.indexOf(file) + 1]}${Number.parseInt(rank) + 2}`);
-	highlightSquare(`${FILES[FILES.indexOf(file) + 1]}${Number.parseInt(rank) - 2}`);
-	highlightSquare(`${FILES[FILES.indexOf(file) - 1]}${Number.parseInt(rank) + 2}`);
-	highlightSquare(`${FILES[FILES.indexOf(file) - 2]}${Number.parseInt(rank) - 1}`);
-	highlightSquare(`${FILES[FILES.indexOf(file) + 2]}${Number.parseInt(rank) + 1}`);
-	highlightSquare(`${FILES[FILES.indexOf(file) + 2]}${Number.parseInt(rank) - 1}`);
-	highlightSquare(`${FILES[FILES.indexOf(file) - 2]}${Number.parseInt(rank) + 1}`);
-
-	// RANKS
-	// 	.filter(rank => rank >= startRank)
-	// 	.filter(rank => getPieceFromCoordinates(`${file}${rank}`) === null)
-	// 	.forEach(rank => highlightSquare(`${file}${rank-2}`));
+	const [startFile, startRank] = coordinates.split('');
+	const availableMovementMoves = [
+		`${getMoveFileCoordinates(startFile, -1, player)}${getMoveRankCoodinates(startRank, -2, player)}`,
+		`${getMoveFileCoordinates(startFile, 1, player)}${getMoveRankCoodinates(startRank, 2, player)}`,
+		`${getMoveFileCoordinates(startFile, 1, player)}${getMoveRankCoodinates(startRank, -2, player)}`,
+		`${getMoveFileCoordinates(startFile, -1, player)}${getMoveRankCoodinates(startRank, 2, player)}`,
+		`${getMoveFileCoordinates(startFile, -2, player)}${getMoveRankCoodinates(startRank, -1, player)}`,
+		`${getMoveFileCoordinates(startFile, 2, player)}${getMoveRankCoodinates(startRank, 1, player)}`,
+		`${getMoveFileCoordinates(startFile, 2, player)}${getMoveRankCoodinates(startRank, -1, player)}`,
+		`${getMoveFileCoordinates(startFile, -2, player)}${getMoveRankCoodinates(startRank, 1, player)}`
+	];
+	availableMovementMoves
+		.filter(coordinates => getPlayerFromCoordinates(coordinates) !== player)
+		.forEach(coordinates => highlightSquare(coordinates));
 };
 
 const highlightPawnAvailableMoves = (player, coordinates, alreadyMoved) => {
@@ -144,7 +141,7 @@ const highlightPawnAvailableMoves = (player, coordinates, alreadyMoved) => {
 	availableMovementMoves = availableMovementMoves
 		.map(rank => `${startFile}${rank}`)
 		.filter(coordinates => getPieceFromCoordinates(coordinates) === null);
-	const availableAttackMoves = [getMoveFileCoordinates(startFile, 1, player), getMoveFileCoordinates(startFile, -1, player)] 
+	const availableAttackMoves = [getMoveFileCoordinates(startFile, 1, player), getMoveFileCoordinates(startFile, -1, player)]
 		.map(file => `${file}${getMoveRankCoodinates(startRank, 1, player)}`)
 		.filter(coordinates => getPieceFromCoordinates(coordinates) !== null)
 		.filter(coordinates => getPlayerFromCoordinates(coordinates) !== player);
@@ -154,9 +151,9 @@ const highlightPawnAvailableMoves = (player, coordinates, alreadyMoved) => {
 
 const getMoveRankCoodinates = (startRank, numberOfSquares, player) => {
 	const playerVariant = player === 'white' ? 1 : -1;
-	const startRankNumber = typeof startRank === 'string'
-		? Number.parseInt(startRank)
-		: startRank;
+	const startRankNumber = typeof startRank === 'string' ?
+		Number.parseInt(startRank) :
+		startRank;
 	return startRankNumber + numberOfSquares * playerVariant;
 }
 
@@ -185,17 +182,17 @@ const highlightSquare = (coordinates) => {
 	element.setAttribute('highlighted', true);
 };
 
-const setUpSpecialMoves = (piece, coordinates, player) => {	
+const setUpSpecialMoves = (piece, coordinates, player) => {
 	const newPiece = piece.cloneNode(true);
 	if (newPiece.attributes.piece.value === 'pawn') {
-		newPiece.setAttribute('alreadyMoved', true);
-	}
-	// promotion
-	const rank = coordinates[1];
-	if (player === 'white' && rank === '8') {
-		newPiece.setAttribute('piece', 'tower');
-		newPiece.classList.remove('fa-chess-pawn');
-		newPiece.classList.add('fa-chess-rook');
+		newPiece.setAttribute('alreadyMoved', true);		
+		// promotion
+		const rank = coordinates[1];
+		if (player === 'white' && rank === '8') {
+			newPiece.setAttribute('piece', 'tower');
+			newPiece.classList.remove('fa-chess-pawn');
+			newPiece.classList.add('fa-chess-rook');
+		}
 	}
 	return newPiece;
 }
