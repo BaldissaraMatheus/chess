@@ -41,8 +41,9 @@ const addEventListenerOnSquares = () => {
 };
 
 const handleMouseUpOnSquare = event => {
+	// https://www.samanthaming.com/tidbits/19-2-ways-to-convert-to-boolean/
 	const isSquareAvailableMove = event.target.attributes.highlighted
-		&& Boolean(event.target.attributes.highlighted.value);
+		&& !!event.target.attributes.highlighted.value;
 	if (isSquareAvailableMove) {
 		const selectedPiece = document.querySelector('[selected=true]');
 		const clonePiece = selectedPiece.cloneNode(true);
