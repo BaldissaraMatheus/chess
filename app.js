@@ -110,22 +110,47 @@ const getPieceFromCoordinates = (coordinates, player) => {
 const getHighlightAvailableMovesFnBySelectedPiece = (piece) => {
 	const MapPiescesToAvailableMovesFn = {
 		pawn: highlightPawnAvailableMoves,
-		knight: highlightKnightAvailableMoves
+		knight: highlightKnightAvailableMoves,
+		bishop: highlightBishopAvailableMoves
 	};
 	return MapPiescesToAvailableMovesFn[piece] || (() => console.log('A peça selecionada não possui uma função de movimento implementada'));
+};
+
+const highlightBishopAvailableMoves = (player, coordinates) => {
+	const [startFile, startRank] = coordinates.split('');
+	const moves = [];
+	const edgeCoordinates = [[1, 1],[1, -1],[-1, 1],[-1, -1]];
+
+	edgeCoordinates.forEach(coordinates => {
+		let multiplier = 1;
+		let moveFile = getMoveFileCoordinates(startFile, coordinates[0] * multiplier, player);
+		let moveRank = getMoveRankCoordinates(startRank, coordinates[1] * multiplier, player);
+		while (moveFile && moveRank) {
+			moves.push(`${moveFile}${moveRank}`);
+			multiplier += 1;
+			// console.log(coordinates[0] * multiplier);
+			console.log(`${moveFile}${moveRank}`);
+			moveFile = getMoveFileCoordinates(startFile, coordinates[0] * multiplier, player);
+			moveRank = getMoveRankCoordinates(startRank, coordinates[1] * multiplier, player);			
+		}
+	});	
+
+	moves
+		.filter(coordinates => getPlayerFromCoordinates(coordinates) !== player)
+		.forEach(coordinates => highlightSquare(coordinates));
 };
 
 const highlightKnightAvailableMoves = (player, coordinates) => {
 	const [startFile, startRank] = coordinates.split('');
 	const availableMovementMoves = [
-		`${getMoveFileCoordinates(startFile, -1, player)}${getMoveRankCoodinates(startRank, -2, player)}`,
-		`${getMoveFileCoordinates(startFile, 1, player)}${getMoveRankCoodinates(startRank, 2, player)}`,
-		`${getMoveFileCoordinates(startFile, 1, player)}${getMoveRankCoodinates(startRank, -2, player)}`,
-		`${getMoveFileCoordinates(startFile, -1, player)}${getMoveRankCoodinates(startRank, 2, player)}`,
-		`${getMoveFileCoordinates(startFile, -2, player)}${getMoveRankCoodinates(startRank, -1, player)}`,
-		`${getMoveFileCoordinates(startFile, 2, player)}${getMoveRankCoodinates(startRank, 1, player)}`,
-		`${getMoveFileCoordinates(startFile, 2, player)}${getMoveRankCoodinates(startRank, -1, player)}`,
-		`${getMoveFileCoordinates(startFile, -2, player)}${getMoveRankCoodinates(startRank, 1, player)}`
+		`${getMoveFileCoordinates(startFile, -1, player)}${getMoveRankCoordinates(startRank, -2, player)}`,
+		`${getMoveFileCoordinates(startFile, 1, player)}${getMoveRankCoordinates(startRank, 2, player)}`,
+		`${getMoveFileCoordinates(startFile, 1, player)}${getMoveRankCoordinates(startRank, -2, player)}`,
+		`${getMoveFileCoordinates(startFile, -1, player)}${getMoveRankCoordinates(startRank, 2, player)}`,
+		`${getMoveFileCoordinates(startFile, -2, player)}${getMoveRankCoordinates(startRank, -1, player)}`,
+		`${getMoveFileCoordinates(startFile, 2, player)}${getMoveRankCoordinates(startRank, 1, player)}`,
+		`${getMoveFileCoordinates(startFile, 2, player)}${getMoveRankCoordinates(startRank, -1, player)}`,
+		`${getMoveFileCoordinates(startFile, -2, player)}${getMoveRankCoordinates(startRank, 1, player)}`
 	];
 	availableMovementMoves
 		.filter(coordinates => getPlayerFromCoordinates(coordinates) !== player)
@@ -134,22 +159,22 @@ const highlightKnightAvailableMoves = (player, coordinates) => {
 
 const highlightPawnAvailableMoves = (player, coordinates, alreadyMoved) => {
 	const [startFile, startRank] = coordinates.split('');
-	let availableMovementMoves = [getMoveRankCoodinates(startRank, 1, player)];
+	let availableMovementMoves = [getMoveRankCoordinates(startRank, 1, player)];
 	if (!alreadyMoved) {
-		availableMovementMoves.push(getMoveRankCoodinates(startRank, 2, player));
+		availableMovementMoves.push(getMoveRankCoordinates(startRank, 2, player));
 	}
 	availableMovementMoves = availableMovementMoves
 		.map(rank => `${startFile}${rank}`)
 		.filter(coordinates => getPieceFromCoordinates(coordinates) === null);
 	const availableAttackMoves = [getMoveFileCoordinates(startFile, 1, player), getMoveFileCoordinates(startFile, -1, player)]
-		.map(file => `${file}${getMoveRankCoodinates(startRank, 1, player)}`)
+		.map(file => `${file}${getMoveRankCoordinates(startRank, 1, player)}`)
 		.filter(coordinates => getPieceFromCoordinates(coordinates) !== null)
 		.filter(coordinates => getPlayerFromCoordinates(coordinates) !== player);
 	availableMovementMoves.forEach(square => highlightSquare(square));
 	availableAttackMoves.forEach(square => highlightSquare(square));
 };
 
-const getMoveRankCoodinates = (startRank, numberOfSquares, player) => {
+const getMoveRankCoordinates = (startRank, numberOfSquares, player) => {
 	const playerVariant = player === 'white' ? 1 : -1;
 	const startRankNumber = typeof startRank === 'string' ?
 		Number.parseInt(startRank) :
@@ -185,7 +210,7 @@ const highlightSquare = (coordinates) => {
 const setUpSpecialMoves = (piece, coordinates, player) => {
 	const newPiece = piece.cloneNode(true);
 	if (newPiece.attributes.piece.value === 'pawn') {
-		newPiece.setAttribute('alreadyMoved', true);		
+		newPiece.setAttribute('alreadyMoved', true);
 		// promotion
 		const rank = coordinates[1];
 		if (player === 'white' && rank === '8') {
