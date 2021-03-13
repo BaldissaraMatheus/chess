@@ -124,7 +124,6 @@ const highlightRookAvailableMoves = (player, coordinates) => {
 	let posicao = quadradosPraBaixo.findIndex(quadrado => getPieceFromCoordinates(quadrado) !== null);
 	if (posicao !== -1) {
 		const newArray = quadradosPraBaixo.filter(coordinates => getPlayerFromCoordinates(coordinates) !== null);
-		//console.log(newArray);
 		const posicaoPeca = quadradosPraBaixo.indexOf(newArray[newArray.length-1]);
 		const posicaoPlayer = getPlayerFromCoordinates(newArray[newArray.length-1]);
 		if (posicaoPlayer === player) {
@@ -193,10 +192,16 @@ const highlightBishopAvailableMoves = (player, coordinates) => {
 		let moveFile = getMoveFileCoordinates(startFile, coordinates[0] * multiplier, player);
 		let moveRank = getMoveRankCoordinates(startRank, coordinates[1] * multiplier, player);
 		while (moveFile && moveRank) {
-			moves.push(`${moveFile}${moveRank}`);
+			const coordenadas = `${moveFile}${moveRank}`;
+			if (getPieceFromCoordinates(coordenadas)) {
+				if (getPlayerFromCoordinates(coordenadas) === player) {
+					return;
+				}
+				moves.push(coordenadas);
+				return;
+			}
+			moves.push(coordenadas);
 			multiplier += 1;
-			// console.log(coordinates[0] * multiplier);
-			console.log(`${moveFile}${moveRank}`);
 			moveFile = getMoveFileCoordinates(startFile, coordinates[0] * multiplier, player);
 			moveRank = getMoveRankCoordinates(startRank, coordinates[1] * multiplier, player);			
 		}
