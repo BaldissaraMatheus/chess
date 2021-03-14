@@ -208,7 +208,7 @@ const highlightQueenAvailableMoves = (player, coordinates) => {
 };
 
 const highlightRookAvailableMoves = (player, coordinates) => {
-	const foo = (ranksOrFiles, operator) => {
+	const getSquaresToHighlight = (ranksOrFiles, operator) => {
 		const [startFile, startRank] = coordinates.split('');
 		const comparator = ranksOrFiles === 'ranks' ? startRank : startFile;
 		const filterFn = operator === 'greaterThan'
@@ -241,10 +241,10 @@ const highlightRookAvailableMoves = (player, coordinates) => {
 			: squares.filter(greaterThanEqualFilterIndexFn);
 		return squaresToHighlight;
 	}
-	const squaresDown = foo('ranks', 'greaterThan');
-	const squaresUp = foo('ranks', 'lessThan');
-	const squaresLeft = foo('files', 'greaterThan');
-	const squaresRight = foo('files', 'lessThan');
+	const squaresDown = getSquaresToHighlight('ranks', 'greaterThan');
+	const squaresUp = getSquaresToHighlight('ranks', 'lessThan');
+	const squaresLeft = getSquaresToHighlight('files', 'greaterThan');
+	const squaresRight = getSquaresToHighlight('files', 'lessThan');
 	const squares = [...squaresDown, ...squaresUp, ...squaresLeft, ...squaresRight];
 
 	squares.forEach(quadrado => highlightSquare(quadrado));
