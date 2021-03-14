@@ -285,7 +285,7 @@ const setUpSpecialMoves = (piece, coordinates, player) => {
 		// promotion
 		const rank = coordinates[1];
 		if ((player === 'white' && rank === '8') || (player === 'black' && rank === '1')) {
-			newPiece.setAttribute('piece', 'tower');
+			newPiece.setAttribute('piece', 'rook');
 			newPiece.classList.remove('fa-chess-pawn');
 			newPiece.classList.add('fa-chess-rook');
 		}
