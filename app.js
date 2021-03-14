@@ -144,14 +144,12 @@ const highlightQueenAvailableMoves = (player, coordinates) => {
 	});	
 
 	let quadradosPraBaixo = RANKS.filter(rank => startRank > rank).map(rank => `${startFile}${rank}`);
-	console.log(quadradosPraBaixo);
 	let posicao = quadradosPraBaixo.findIndex(quadrado => getPieceFromCoordinates(quadrado) !== null);
 	if (posicao !== -1) {
 		const newArray = quadradosPraBaixo.filter(coordinates => getPlayerFromCoordinates(coordinates) !== null);
 		const posicaoPeca = quadradosPraBaixo.indexOf(newArray[newArray.length-1]);
 		const posicaoPlayer = getPlayerFromCoordinates(newArray[newArray.length-1]);
 		if (posicaoPlayer === player) {
-			console.log(newArray);
 			quadradosPraBaixo = quadradosPraBaixo
 				.filter((coordinates, index) => index > posicaoPeca);
 		}
@@ -210,68 +208,46 @@ const highlightQueenAvailableMoves = (player, coordinates) => {
 };
 
 const highlightRookAvailableMoves = (player, coordinates) => {
-	const [startFile, startRank] = coordinates.split('');
-	let quadradosPraBaixo = RANKS.filter(rank => startRank > rank).map(rank => `${startFile}${rank}`);
-	console.log(quadradosPraBaixo);
-	let posicao = quadradosPraBaixo.findIndex(quadrado => getPieceFromCoordinates(quadrado) !== null);
-	if (posicao !== -1) {
-		const newArray = quadradosPraBaixo.filter(coordinates => getPlayerFromCoordinates(coordinates) !== null);
-		const posicaoPeca = quadradosPraBaixo.indexOf(newArray[newArray.length-1]);
-		const posicaoPlayer = getPlayerFromCoordinates(newArray[newArray.length-1]);
-		if (posicaoPlayer === player) {
-			console.log(newArray);
-			quadradosPraBaixo = quadradosPraBaixo
-				.filter((coordinates, index) => index > posicaoPeca);
+	const foo = (ranksOrFiles, operator) => {
+		const [startFile, startRank] = coordinates.split('');
+		const comparator = ranksOrFiles === 'ranks' ? startRank : startFile;
+		const filterFn = operator === 'greaterThan'
+			? square => comparator > square
+			: square => comparator < square;
+		const mapFn = ranksOrFiles === 'ranks'
+			? rank => `${startFile}${rank}`
+			: file => `${file}${startRank}`;
+		const arr = ranksOrFiles === 'ranks' ? RANKS : FILES;
+		const squares = arr.filter(filterFn).map(mapFn);
+		let indexFoundPiece = squares.findIndex(square => getPieceFromCoordinates(square) !== null);
+		if (indexFoundPiece === -1) {
+			return squares;
 		}
-		else {
-			quadradosPraBaixo = quadradosPraBaixo
-				.filter((coordinates, index) => index >= posicaoPeca);
+		foundPiece = squares[indexFoundPiece];
+		if (operator === 'greaterThan') {
+			const squaresThatHasPieces = squares.filter(coordinates => getPlayerFromCoordinates(coordinates) !== null);
+			foundPiece = squaresThatHasPieces[squaresThatHasPieces.length-1];
+			indexFoundPiece = squares.indexOf(foundPiece);
 		}
+		const greaterThanFilterIndexFn = operator === 'greaterThan'
+			? (_, index) => index > indexFoundPiece
+			: (_, index) => index < indexFoundPiece;
+		const greaterThanEqualFilterIndexFn = operator === 'greaterThan'
+			? (_, index) => index >= indexFoundPiece
+			: (_, index) => index <= indexFoundPiece;
+		const foundPiecePlayer = getPlayerFromCoordinates(foundPiece);
+		const squaresToHighlight = foundPiecePlayer === player
+			? squares.filter(greaterThanFilterIndexFn)
+			: squares.filter(greaterThanEqualFilterIndexFn);
+		return squaresToHighlight;
 	}
+	const squaresDown = foo('ranks', 'greaterThan');
+	const squaresUp = foo('ranks', 'lessThan');
+	const squaresLeft = foo('files', 'greaterThan');
+	const squaresRight = foo('files', 'lessThan');
+	const squares = [...squaresDown, ...squaresUp, ...squaresLeft, ...squaresRight];
 
-	let quadradosPraCima = RANKS.filter(rank => startRank < rank).map(rank => `${startFile}${rank}`);
-	posicao = quadradosPraCima.findIndex(quadrado => getPieceFromCoordinates(quadrado) !== null);
-	if (posicao !== -1) {
-		const pecaPlayer = getPlayerFromCoordinates(`${startFile}${quadradosPraCima[posicao]}`);
-		if (pecaPlayer === player) {
-			quadradosPraCima = quadradosPraCima.filter((coordinates, index) => index < posicao);
-		}
-		else {
-			quadradosPraCima = quadradosPraCima.filter((coordinates, index) => index <= posicao);
-		}
-	}
-
-	let quadradosPraEsquerda = FILES.filter(file => FILES.indexOf(startFile) > FILES.indexOf(file)).map(file => `${file}${startRank}`);
-	posicao = quadradosPraEsquerda.findIndex(quadrado => getPieceFromCoordinates(quadrado) !== null);
-	if (posicao !== -1) {
-		const newArray = quadradosPraEsquerda.filter(coordinates => getPlayerFromCoordinates(coordinates) !== null);
-		const posicaoPeca = quadradosPraEsquerda.indexOf(newArray[newArray.length-1]);
-		const posicaoPlayer = getPlayerFromCoordinates(newArray[newArray.length-1]);
-		if (posicaoPlayer === player) {
-			quadradosPraEsquerda = quadradosPraEsquerda.filter((coordinates, index) => index > posicaoPeca);
-		}
-		else {
-			quadradosPraEsquerda = quadradosPraEsquerda.filter((coordinates, index) => index >= posicaoPeca);
-		}
-	}
-	
-	let quadradosPraDireita = FILES.filter(file => FILES.indexOf(startFile) < FILES.indexOf(file)).map(file => `${file}${startRank}`);
-	posicao = quadradosPraDireita.findIndex(quadrado => getPieceFromCoordinates(quadrado) !== null);
-	if (posicao !== -1) {
-		const pecaPlayer = getPlayerFromCoordinates(`${quadradosPraDireita[posicao]}${startRank}`);
-		if (pecaPlayer === player) {
-			quadradosPraDireita = quadradosPraDireita.filter((coordinates, index) => index < posicao);
-		}
-		else {
-			quadradosPraDireita = quadradosPraDireita.filter((coordinates, index) => index <= posicao);
-		}
-	}
-
-	let quadrados = [...quadradosPraCima, ...quadradosPraBaixo, ...quadradosPraEsquerda, ...quadradosPraDireita];
-	quadrados = quadrados
-		.filter(coordinates => getPlayerFromCoordinates(coordinates) !== player);
-	quadrados.forEach(quadrado => highlightSquare(quadrado));
-	
+	squares.forEach(quadrado => highlightSquare(quadrado));
 };
 
 const highlightBishopAvailableMoves = (player, coordinates) => {
