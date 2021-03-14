@@ -121,12 +121,16 @@ const getHighlightAvailableMovesFnBySelectedPiece = (piece) => {
 const highlightPawnAvailableMoves = (player, coordinates, alreadyMoved) => {
 	const [startFile, startRank] = coordinates.split('');
 	let availableMovementMoves = [getMoveRankCoordinates(startRank, 1, player)];
-	if (!alreadyMoved) {
-		availableMovementMoves.push(getMoveRankCoordinates(startRank, 2, player));
-	}
 	availableMovementMoves = availableMovementMoves
 		.map(rank => `${startFile}${rank}`)
 		.filter(coordinates => getPieceFromCoordinates(coordinates) === null);
+	if (!alreadyMoved && availableMovementMoves.length > 0) {
+		const extraMove = getMoveRankCoordinates(startRank, 2, player);
+		const extraMoveCoordinates = `${startFile}${extraMove}`;
+		if (getPieceFromCoordinates(extraMoveCoordinates) === null) {
+			availableMovementMoves.push(extraMoveCoordinates);
+		}
+	}
 	const availableAttackMoves = [getMoveFileCoordinates(startFile, 1, player), getMoveFileCoordinates(startFile, -1, player)]
 		.map(file => `${file}${getMoveRankCoordinates(startRank, 1, player)}`)
 		.filter(coordinates => getPieceFromCoordinates(coordinates) !== null)
