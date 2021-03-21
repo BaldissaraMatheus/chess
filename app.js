@@ -1,10 +1,6 @@
 const FILES = new Array(8).fill(undefined).map((value, i) => String.fromCharCode('a'.charCodeAt(0) + i));
 const RANKS = new Array(8).fill(undefined).map((_, index) => index + 1);
 
-// TODO implementar movimentacao por vez do jogador
-// TODO implementar pontuacao
-// TODO implementar movimentos das outras pecas
-
 window.onload = () => {
 	setupInitialPiecesPositions();
 	addEventListenerOnSquares();
@@ -36,8 +32,8 @@ const insertIntoRank = (rank, pieces, player) => {
 
 const addEventListenerOnSquares = () => {
 	const squares = Array.from(document.getElementsByClassName('square'));
-	squares.forEach(square => square.addEventListener('mouseup', event => handleMouseUpOnSquare(event)));
 	squares.forEach(square => square.addEventListener('mousedown', event => handleMouseDownOnSquare(event)));
+	squares.forEach(square => square.addEventListener('mouseup', event => handleMouseUpOnSquare(event)));
 };
 
 const handleMouseUpOnSquare = event => {
@@ -50,7 +46,7 @@ const handleMouseUpOnSquare = event => {
 		selectedPiece.parentNode.removeChild(selectedPiece);
 		const elementToRemove = event.target.firstChild;
 		if (elementToRemove) {
-			const mapPiecesToScore = { pawn: 1, knight: 3, bishop: 3, rook: 5, queen: 9, };
+			const mapPiecesToScore = { pawn: 1, knight: 3, bishop: 3, rook: 5, queen: 9, king: 0 };
 			const removedPiece = elementToRemove.attributes.piece.value;
 			const score = mapPiecesToScore[removedPiece];
 			increaseActivePlayerScore(score);
@@ -58,15 +54,17 @@ const handleMouseUpOnSquare = event => {
 		}
 		const newPiece = setUpSpecialMoves(clonePiece, event.target.id, clonePiece.attributes.player.value);
 		event.target.appendChild(newPiece);
+		changeActivePlayer();
 	}
+	removeSelectedPiece();
 	cleanHighlightedSquares();
 };
 
 const increaseActivePlayerScore = score => {
 	// https://github.com/airbnb/css#javascript-hooks
 	const players = Array.from(document.getElementsByClassName('js-player'))
-		.sort((a, b) => a.attributes['active-player'] === 'true' ? 1 : -1);
-	const activePlayer = players[0];
+		.filter(player => player.attributes['active-player'].value === 'true');
+	const activePlayer = players[0];;
 	const oldScore = Number.parseInt(activePlayer.textContent.split(' ')[2]);
 	const newScore = oldScore + score;
 	activePlayer.innerHTML = activePlayer.textContent
@@ -76,24 +74,12 @@ const increaseActivePlayerScore = score => {
 		.join(' ');
 }
 
-const handleMouseDownOnSquare = event => {
-	event.preventDefault() // Impede que tabuleiro seja arrastado junto
-	removeSelectedPiece();
-	cleanHighlightedSquares();
-	const coordinates = event.target.id;
-	const piece = getPieceFromCoordinates(coordinates);
-	if (!piece) {
-		console.log(`Peça na coordenada ${coordinates.toUpperCase()}: vazio`);
-		return;
-	}
-	event.target.firstChild.setAttribute('selected', true);
-	const player = event.target.firstChild.attributes.player.value;
-	console.log(`Peça na coordenada ${coordinates.toUpperCase()}: ${piece} ${player}`);
-	const hightlightAvailableMovesFn = getHighlightAvailableMovesFnBySelectedPiece(piece);
-	const alreadyMoved = event.target.firstChild.attributes.alreadyMoved &&
-		event.target.firstChild.attributes.alreadyMoved.value;
-	hightlightAvailableMovesFn(player, coordinates, alreadyMoved);
-};
+const changeActivePlayer = () => {
+	const players = Array.from(document.getElementsByClassName('js-player'))
+		.sort((a, b) => a.attributes['active-player'].value === 'true' ? -1 : 1);
+	players[0].setAttribute('active-player', false);
+	players[1].setAttribute('active-player', true);
+}
 
 const removeSelectedPiece = () => {
 	const selectedPiece = document.querySelector('[selected=true]');
@@ -106,6 +92,26 @@ const cleanHighlightedSquares = () => {
 	document
 		.querySelectorAll('[highlighted]')
 		.forEach(el => el.removeAttribute('highlighted'));
+};
+
+const handleMouseDownOnSquare = event => {
+	event.preventDefault() // Impede que tabuleiro seja arrastado junto
+	const coordinates = event.target.id;
+	const piece = getPieceFromCoordinates(coordinates);
+	if (!piece) {
+		console.log(`Peça na coordenada ${coordinates.toUpperCase()}: vazio`);
+		return;
+	}
+	event.target.firstChild.setAttribute('selected', true);
+	const pieceColor = event.target.firstChild.attributes.player.value;
+	console.log(`Peça na coordenada ${coordinates.toUpperCase()}: ${piece} ${pieceColor}`);
+	if (!isPieceFromActivePlayer(pieceColor)) {
+		return;
+	}
+	const hightlightAvailableMovesFn = getHighlightAvailableMovesFnBySelectedPiece(piece);
+	const alreadyMoved = event.target.firstChild.attributes.alreadyMoved &&
+		event.target.firstChild.attributes.alreadyMoved.value;
+	hightlightAvailableMovesFn(pieceColor, coordinates, alreadyMoved);
 };
 
 const getPieceFromCoordinates = (coordinates, player) => {
@@ -123,6 +129,14 @@ const getPieceFromCoordinates = (coordinates, player) => {
 	return piece;
 }
 
+const isPieceFromActivePlayer = pieceColor => {
+	const players = Array.from(document.getElementsByClassName('js-player'))
+		.filter(player => player.attributes['active-player'].value === 'true');
+	const activePlayer = players[0].innerHTML.split(' ')[1].charAt(0);
+	return (activePlayer === '1' && pieceColor === 'white')
+		|| (activePlayer === '2' && pieceColor === 'black');
+}
+
 const getHighlightAvailableMovesFnBySelectedPiece = (piece) => {
 	const MapPiescesToAvailableMovesFn = {
 		pawn: highlightPawnAvailableMoves,
@@ -132,7 +146,8 @@ const getHighlightAvailableMovesFnBySelectedPiece = (piece) => {
 		queen: highlightQueenAvailableMoves,
 		king: highlightKingAvailableMoves,
 	};
-	return MapPiescesToAvailableMovesFn[piece] || (() => console.log('A peça selecionada não possui uma função de movimento implementada'));
+	return MapPiescesToAvailableMovesFn[piece]
+		|| (() => console.log('A peça selecionada não possui uma função de movimento implementada'));
 };
 
 const highlightPawnAvailableMoves = (player, coordinates, alreadyMoved) => {
@@ -148,7 +163,10 @@ const highlightPawnAvailableMoves = (player, coordinates, alreadyMoved) => {
 			availableMovementMoves.push(extraMoveCoordinates);
 		}
 	}
-	const availableAttackMoves = [getMoveFileCoordinates(startFile, 1, player), getMoveFileCoordinates(startFile, -1, player)]
+	const availableAttackMoves = [
+		getMoveFileCoordinates(startFile, 1, player),
+		getMoveFileCoordinates(startFile, -1, player)
+	]
 		.map(file => `${file}${getMoveRankCoordinates(startRank, 1, player)}`)
 		.filter(coordinates => getPieceFromCoordinates(coordinates) !== null)
 		.filter(coordinates => getPlayerFromCoordinates(coordinates) !== player);
@@ -221,7 +239,8 @@ const highlightRookAvailableMoves = (player, coordinates) => {
 		}
 		foundPiece = squares[indexFoundPiece];
 		if (operator === 'greaterThan') {
-			const squaresThatHasPieces = squares.filter(coordinates => getPlayerFromCoordinates(coordinates) !== null);
+			const squaresThatHasPieces = squares
+				.filter(coordinates => getPlayerFromCoordinates(coordinates) !== null);
 			foundPiece = squaresThatHasPieces[squaresThatHasPieces.length-1];
 			indexFoundPiece = squares.indexOf(foundPiece);
 		}
