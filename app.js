@@ -36,6 +36,11 @@ const addEventListenerOnSquares = () => {
 	squares.forEach(square => square.addEventListener('mouseup', event => handleMouseUpOnSquare(event)));
 };
 
+const removeEventListenerOnSquares = () => {
+	const squares = Array.from(document.getElementsByClassName('square'));
+	squares.forEach(square => square.replaceWith(square.cloneNode(true)));
+}
+
 const handleMouseUpOnSquare = event => {
 	// https://www.samanthaming.com/tidbits/19-2-ways-to-convert-to-boolean/
 	const isSquareAvailableMove = event.target.attributes.highlighted
@@ -51,6 +56,11 @@ const handleMouseUpOnSquare = event => {
 			const score = mapPiecesToScore[removedPiece];
 			increaseActivePlayerScore(score);
 			elementToRemove.parentNode.removeChild(elementToRemove);
+			if (removedPiece === 'king') {
+				event.target.appendChild(clonePiece);
+				finishGame();
+				return;
+			}
 		}
 		const newPiece = setUpSpecialMoves(clonePiece, event.target.id, clonePiece.attributes.player.value);
 		event.target.appendChild(newPiece);
@@ -72,6 +82,19 @@ const increaseActivePlayerScore = score => {
 		.slice(0, 2)
 		.concat(newScore)
 		.join(' ');
+}
+
+const finishGame = () => {
+	const players = Array.from(document.getElementsByClassName('js-player'))
+		.sort((a, b) => a.attributes['active-player'].value === 'true' ? -1 : 1);
+	const lostPlayer = players[1];
+	const classes = lostPlayer.attributes.class.value;
+	const classesWithLineTrough = [...classes.split(' '), 'text-decoration-line-trough'].join(' ');
+	lostPlayer.setAttribute('class', classesWithLineTrough);
+	removeSelectedPiece();
+	cleanHighlightedSquares();
+	removeEventListenerOnSquares();
+	console.log(`${players[0].innerHTML.split(':')[0]} ganhou o jogo!`);
 }
 
 const changeActivePlayer = () => {

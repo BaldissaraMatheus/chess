@@ -83,3 +83,7 @@
 	text-decoration: underline;
 	animation-delay: 1s;
 }
+
+.text-decoration-line-trough {
+	text-decoration: line-through;
+}
