@@ -21,91 +21,95 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==" crossorigin="anonymous" />
   </head>
   <body>
-    <div class="bg full-width full-height flex flex--center">
-			<div class="flex flex--center flex--fd-column">
-				<div class="title">
-					Chadrês
+    <div class="bg full-width full-height flex justify-content-center align-items-center">
+			<div class="flex justify-content-center flex--fd-column">
+				<div class="flex justify-content-space-between align-items-center">
+					<div class="js-player crimson-text" active-player="true">Player 1: 0</div>
+					<div class="title crimson-text">
+						Chadrês
+					</div>
+					<div class="js-player crimson-text" active-player="false">Player 2: 0</div>
 				</div>
 				<div class="board flex flex--fd-column">
 					<div class="flex">
-						<div class="square flex flex--center square--light" id="a8"></div>
-						<div class="square flex flex--center square--dark" id="b8"></div>
-						<div class="square flex flex--center square--light" id="c8"></div>
-						<div class="square flex flex--center square--dark" id="d8"></div>
-						<div class="square flex flex--center square--light" id="e8"></div>
-						<div class="square flex flex--center square--dark" id="f8"></div>
-						<div class="square flex flex--center square--light" id="g8"></div>
-						<div class="square flex flex--center square--dark" id="h8"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="a8"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="b8"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="c8"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="d8"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="e8"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="f8"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="g8"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="h8"></div>
 					</div>
 					<div class="flex">
-						<div class="square flex flex--center square--dark" id="a7"></div>
-						<div class="square flex flex--center square--light" id="b7"></div>
-						<div class="square flex flex--center square--dark" id="c7"></div>
-						<div class="square flex flex--center square--light" id="d7"></div>
-						<div class="square flex flex--center square--dark" id="e7"></div>
-						<div class="square flex flex--center square--light" id="f7"></div>
-						<div class="square flex flex--center square--dark" id="g7"></div>
-						<div class="square flex flex--center square--light" id="h7"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="a7"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="b7"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="c7"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="d7"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="e7"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="f7"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="g7"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="h7"></div>
 					</div>
 					<div class="flex">
-						<div class="square flex flex--center square--light" id="a6"></div>
-						<div class="square flex flex--center square--dark" id="b6"></div>
-						<div class="square flex flex--center square--light" id="c6"></div>
-						<div class="square flex flex--center square--dark" id="d6"></div>
-						<div class="square flex flex--center square--light" id="e6"></div>
-						<div class="square flex flex--center square--dark" id="f6"></div>
-						<div class="square flex flex--center square--light" id="g6"></div>
-						<div class="square flex flex--center square--dark" id="h6"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="a6"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="b6"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="c6"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="d6"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="e6"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="f6"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="g6"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="h6"></div>
 					</div>
 					<div class="flex">
-						<div class="square flex flex--center square--dark" id="a5"></div>
-						<div class="square flex flex--center square--light" id="b5"></div>
-						<div class="square flex flex--center square--dark" id="c5"></div>
-						<div class="square flex flex--center square--light" id="d5"></div>
-						<div class="square flex flex--center square--dark" id="e5"></div>
-						<div class="square flex flex--center square--light" id="f5"></div>
-						<div class="square flex flex--center square--dark" id="g5"></div>
-						<div class="square flex flex--center square--light" id="h5"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="a5"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="b5"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="c5"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="d5"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="e5"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="f5"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="g5"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="h5"></div>
 					</div>
 					<div class="flex">
-						<div class="square flex flex--center square--light" id="a4"></div>
-						<div class="square flex flex--center square--dark" id="b4"></div>
-						<div class="square flex flex--center square--light" id="c4"></div>
-						<div class="square flex flex--center square--dark" id="d4"></div>
-						<div class="square flex flex--center square--light" id="e4"></div>
-						<div class="square flex flex--center square--dark" id="f4"></div>
-						<div class="square flex flex--center square--light" id="g4"></div>
-						<div class="square flex flex--center square--dark" id="h4"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="a4"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="b4"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="c4"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="d4"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="e4"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="f4"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="g4"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="h4"></div>
 					</div>
 					<div class="flex">
-						<div class="square flex flex--center square--dark" id="a3"></div>
-						<div class="square flex flex--center square--light" id="b3"></div>
-						<div class="square flex flex--center square--dark" id="c3"></div>
-						<div class="square flex flex--center square--light" id="d3"></div>
-						<div class="square flex flex--center square--dark" id="e3"></div>
-						<div class="square flex flex--center square--light" id="f3"></div>
-						<div class="square flex flex--center square--dark" id="g3"></div>
-						<div class="square flex flex--center square--light" id="h3"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="a3"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="b3"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="c3"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="d3"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="e3"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="f3"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="g3"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="h3"></div>
 					</div>
 					<div class="flex">
-						<div class="square flex flex--center square--light" id="a2"></div>
-						<div class="square flex flex--center square--dark" id="b2"></div>
-						<div class="square flex flex--center square--light" id="c2"></div>
-						<div class="square flex flex--center square--dark" id="d2"></div>
-						<div class="square flex flex--center square--light" id="e2"></div>
-						<div class="square flex flex--center square--dark" id="f2"></div>
-						<div class="square flex flex--center square--light" id="g2"></div>
-						<div class="square flex flex--center square--dark" id="h2"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="a2"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="b2"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="c2"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="d2"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="e2"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="f2"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="g2"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="h2"></div>
 					</div>
 					<div class="flex">
-						<div class="square flex flex--center square--dark" id="a1"></div>
-						<div class="square flex flex--center square--light" id="b1"></div>
-						<div class="square flex flex--center square--dark" id="c1"></div>
-						<div class="square flex flex--center square--light" id="d1"></div>
-						<div class="square flex flex--center square--dark" id="e1"></div>
-						<div class="square flex flex--center square--light" id="f1"></div>
-						<div class="square flex flex--center square--dark" id="g1"></div>
-						<div class="square flex flex--center square--light" id="h1"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="a1"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="b1"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="c1"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="d1"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="e1"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="f1"></div>
+						<div class="square flex justify-content-center align-items-center square--dark" id="g1"></div>
+						<div class="square flex justify-content-center align-items-center square--light" id="h1"></div>
 					</div>
 				</div>
 			</div>

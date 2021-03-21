@@ -14,18 +14,28 @@
 	display: flex;
 }
 
-.flex--center {
-	align-items: center;
+.justify-content-center {
 	justify-content: center;
+}
+
+.align-items-center {
+	align-items: center;
+}
+
+.justify-content-space-between {
+	justify-content: space-between;
 }
 
 .flex--fd-column {
 	flex-direction: column;
 }
 
+.crimson-text {
+	font-family: 'Crimson Text';
+}
+
 .title {
 	color: black;
-	font-family: 'Crimson Text', serif;
 	font-style: italic;
 	font-size: 2rem;
 }
@@ -67,4 +77,9 @@
 
 .piece--white {
 	color: whitesmoke;
+}
+
+[active-player="true"] {
+	text-decoration: underline;
+	animation-delay: 1s;
 }

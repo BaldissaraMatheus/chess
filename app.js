@@ -36,22 +36,24 @@ const insertIntoRank = (rank, pieces, player) => {
 
 const addEventListenerOnSquares = () => {
 	const squares = Array.from(document.getElementsByClassName('square'));
-	squares.forEach(square => square.addEventListener('mousedown', event => handleMouseDownOnSquare(event)));
 	squares.forEach(square => square.addEventListener('mouseup', event => handleMouseUpOnSquare(event)));
+	squares.forEach(square => square.addEventListener('mousedown', event => handleMouseDownOnSquare(event)));
 };
 
 const handleMouseUpOnSquare = event => {
 	// https://www.samanthaming.com/tidbits/19-2-ways-to-convert-to-boolean/
-	const isSquareAvailableMove = event.target.attributes.highlighted &&
-		!!event.target.attributes.highlighted.value;
+	const isSquareAvailableMove = event.target.attributes.highlighted
+		&& !!event.target.attributes.highlighted.value;
 	if (isSquareAvailableMove) {
 		const selectedPiece = document.querySelector('[selected=true]');
 		const clonePiece = selectedPiece.cloneNode(true);
 		selectedPiece.parentNode.removeChild(selectedPiece);
 		const elementToRemove = event.target.firstChild;
 		if (elementToRemove) {
+			const mapPiecesToScore = { pawn: 1, knight: 3, bishop: 3, rook: 5, queen: 9, };
 			const removedPiece = elementToRemove.attributes.piece.value;
-			// TODO chamar funcao de pontuacao aqui, passando removedPiece como parametro
+			const score = mapPiecesToScore[removedPiece];
+			increaseActivePlayerScore(score);
 			elementToRemove.parentNode.removeChild(elementToRemove);
 		}
 		const newPiece = setUpSpecialMoves(clonePiece, event.target.id, clonePiece.attributes.player.value);
@@ -59,6 +61,20 @@ const handleMouseUpOnSquare = event => {
 	}
 	cleanHighlightedSquares();
 };
+
+const increaseActivePlayerScore = score => {
+	// https://github.com/airbnb/css#javascript-hooks
+	const players = Array.from(document.getElementsByClassName('js-player'))
+		.sort((a, b) => a.attributes['active-player'] === 'true' ? 1 : -1);
+	const activePlayer = players[0];
+	const oldScore = Number.parseInt(activePlayer.textContent.split(' ')[2]);
+	const newScore = oldScore + score;
+	activePlayer.innerHTML = activePlayer.textContent
+		.split(' ')
+		.slice(0, 2)
+		.concat(newScore)
+		.join(' ');
+}
 
 const handleMouseDownOnSquare = event => {
 	event.preventDefault() // Impede que tabuleiro seja arrastado junto
