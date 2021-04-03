@@ -4,6 +4,20 @@ const RANKS = new Array(8).fill(undefined).map((_, index) => index + 1);
 window.onload = () => {
 	setupInitialPiecesPositions();
 	addEventListenerOnSquares();
+	const player2 = document.getElementById('player-2')
+
+	// https://stackoverflow.com/a/41425087
+	const observer = new MutationObserver(mutations => {
+		mutations.forEach(mutation => {
+		  if (mutation.type == "attributes" && player2.attributes['active-player'].value === 'true') {
+			executeAITurn();
+		  }
+		});
+	  });
+	  
+	  observer.observe(player2, {
+		attributes: true
+	  });
 };
 
 const setupInitialPiecesPositions = () => {
@@ -349,4 +363,23 @@ const setUpSpecialMoves = (piece, coordinates, player) => {
 		}
 	}
 	return newPiece;
+}
+
+const executeAITurn = () => {
+	const pieces = Array.from(document.querySelectorAll("[player='black']"));
+	const length = pieces.length;
+	const randomIndex = Math.floor(Math.random() * length);
+	const pieceElement = pieces[randomIndex];
+
+	const hightlightAvailableMovesFn = getHighlightAvailableMovesFnBySelectedPiece(pieceElement.attributes.piece.value);
+	hightlightAvailableMovesFn('black', pieceElement.parentElement.id, pieceElement.attributes.alreadyMoved && pieceElement.attributes.alreadyMoved.value);
+
+	const highlightedSquares = Array.from(document.querySelectorAll("[highlighted = 'true']"));
+	if (highlightedSquares.length === 0) {
+		return executeAITurn();
+	}
+	const destSquare = highlightedSquares[highlightedSquares.length-1];
+
+	pieceElement.setAttribute('selected', true);
+	handleMouseUpOnSquare({target: destSquare});
 }
