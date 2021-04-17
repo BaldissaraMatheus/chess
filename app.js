@@ -38,13 +38,18 @@ const insertIntoRank = (file, pieces, player) => {
     RANKS.forEach((rank, i) => {
         const id = `${rank}${file}`;
         const piece = pieces[i];
-        const pieceDomElement = document.createElement('div');
-        pieceDomElement.setAttribute('class', `piece piece--${player} fas fa-chess-${piece}`);
-        pieceDomElement.setAttribute('piece', piece);
-        pieceDomElement.setAttribute('player', player);
+        const pieceDomElement = buildPiece(piece, player);
         document.getElementById(id).appendChild(pieceDomElement);
     });
 };
+
+const buildPiece = (piece, player) => {
+    const pieceDomElement = document.createElement('div');
+    pieceDomElement.setAttribute('class', `piece piece--${player} fas fa-chess-${piece}`);
+    pieceDomElement.setAttribute('piece', piece);
+    pieceDomElement.setAttribute('player', player);
+    return pieceDomElement;
+}
 
 const addEventListenerOnSquares = () => {
     const squares = Array.from(document.getElementsByClassName('square'));
@@ -61,25 +66,36 @@ const handleMouseUpOnSquare = event => {
     // https://www.samanthaming.com/tidbits/19-2-ways-to-convert-to-boolean/
     const isSquareAvailableMove = event.target.attributes.highlighted &&
         !!event.target.attributes.highlighted.value;
+
     if (isSquareAvailableMove) {
         const selectedPiece = document.querySelector('[selected=true]');
         const clonePiece = selectedPiece.cloneNode(true);
         clonePiece.setAttribute('alreadyMoved', true);
+        const initialCoordinates = selectedPiece.parentNode.id;
         selectedPiece.parentNode.removeChild(selectedPiece);
         const elementToRemove = event.target.firstChild;
+
         if (elementToRemove) {
             const mapPiecesToScore = { pawn: 1, knight: 3, bishop: 3, rook: 5, queen: 9, king: 0 };
+            const elementToRemoveClone = elementToRemove.cloneNode(true);
             const removedPiece = elementToRemove.attributes.piece.value;
             const score = mapPiecesToScore[removedPiece];
             increaseActivePlayerScore(score);
             elementToRemove.parentNode.removeChild(elementToRemove);
             if (removedPiece === 'king') {
-                event.target.appendChild(clonePiece);
-                finishGame();
+                if (isPieceFromActivePlayer(elementToRemoveClone.attributes.player.value)) {
+                    castling(clonePiece, initialCoordinates, event.target.id, clonePiece.attributes.player.value);
+                    cleanHighlightedSquares();
+                } else {
+                    event.target.appendChild(clonePiece);
+                    finishGame();
+                }
                 return;
             }
         }
-        const newPiece = setUpSpecialMoves(clonePiece, event.target.id, clonePiece.attributes.player.value);
+
+        const newPiece = setUpSpecialMoves(clonePiece, initialCoordinates, event.target.id, clonePiece.attributes.player.value);
+
         event.target.appendChild(newPiece);
         changeActivePlayer();
     }
@@ -323,16 +339,26 @@ const highlightRookAvailableMoves = (player, coordinates, alreadyMoved) => {
     const squaresRight = getSquaresToHighlight('files', 'lessThan');
     const squares = [...squaresDown, ...squaresUp, ...squaresLeft, ...squaresRight];
 
-    if (!alreadyMoved) {
+    console.log(player)
+    console.log(!alreadyMoved && player === 'white')
+    if (!alreadyMoved && player === 'white') {
         const piece = getPieceObjFromCoordinates('e1');
         if (piece !== null && !piece.attributes.alreadyMoved && piece.attributes.piece.value === 'king') {
             const arr = [];
-            console.log(RANKS.indexOf('e'))
-            for (let i = 1; i < RANKS.indexOf('e'); i++) {
-                const rank = getMoveFileCoordinates('a', i, 'white');
-                arr.push(`${rank}1`);
+            const pieceRank = coordinates.split('')[0];
+            if (pieceRank === 'a') {
+                for (let i = 1; i < RANKS.indexOf('e'); i++) {
+                    const rank = getMoveFileCoordinates('a', i, 'white');
+                    arr.push(`${rank}1`);
+                }
+            } else {
+                for (let i = 1; i > RANKS.indexOf('e'); i--) {
+                    const rank = getMoveFileCoordinates('h', (8 - i) * -1, 'white');
+                    arr.push(`${rank}1`);
+                }
             }
-            console.log(arr);
+
+
 
             if (arr.every(coordinates => getPieceFromCoordinates(coordinates) === null)) {
                 squares.push('e1')
@@ -400,7 +426,7 @@ const highlightSquare = (coordinates) => {
     element.setAttribute('highlighted', true);
 };
 
-const setUpSpecialMoves = (piece, coordinates, player) => {
+const setUpSpecialMoves = (piece, initialCoordinates, coordinates, player) => {
     const newPiece = piece.cloneNode(true);
     if (newPiece.attributes.piece.value === 'pawn') {
         // promotion
@@ -414,13 +440,22 @@ const setUpSpecialMoves = (piece, coordinates, player) => {
     return newPiece;
 }
 
+const castling = (piece, initialCoordinates, coordinates, player) => {
+    const newPiece = piece.cloneNode(true);
+    if (newPiece.attributes.piece.value == 'rook' && player === 'white') {
+        newPiece.setAttribute('castling', true);
+        const king = buildPiece('king', 'white')
 
-const castling = (rookPiece, kingPiece, coordinates) => {
+        if (initialCoordinates === 'a1') {
+            document.getElementById('d1').appendChild(newPiece);
+            document.getElementById('c1').appendChild(king);
+        } else {
+            document.getElementById('f1').appendChild(newPiece);
+            document.getElementById('g1').appendChild(king);
+        }
 
-
-
+    }
 }
-
 
 const executeAITurn = () => {
     const pieces = Array.from(document.querySelectorAll("[player='black']"));
