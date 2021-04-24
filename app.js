@@ -361,8 +361,10 @@ const highlightRookAvailableMoves = (player, coordinates, alreadyMoved) => {
     const squaresLeft = getSquaresToHighlight('files', 'greaterThan');
     const squaresRight = getSquaresToHighlight('files', 'lessThan');
     const squares = [...squaresDown, ...squaresUp, ...squaresLeft, ...squaresRight];
+    
+    const currentPiece = getPieceFromCoordinates(coordinates);
 
-    if (!alreadyMoved && player === 'white') {
+    if (!alreadyMoved && player === 'white' && currentPiece === 'rook') {
         const piece = getPieceObjFromCoordinates('e1');
         if (piece !== null && !piece.attributes.alreadyMoved && piece.attributes.piece.value === 'king') {
             const arr = [];
@@ -373,7 +375,7 @@ const highlightRookAvailableMoves = (player, coordinates, alreadyMoved) => {
                     arr.push(`${rank}1`);
                 }
             } else {
-                for (let i = 1; i > RANKS.indexOf('e'); i--) {
+                for (let i = 7; i > RANKS.indexOf('e')+1; i--) {
                     const rank = getMoveFileCoordinates('h', (8 - i) * -1, 'white');
                     arr.push(`${rank}1`);
                 }
