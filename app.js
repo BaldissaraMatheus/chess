@@ -69,11 +69,18 @@ const handleMouseUpOnSquare = event => {
 
     if (isSquareAvailableMove) {
         const selectedPiece = document.querySelector('[selected=true]');
-        const clonePiece = selectedPiece.cloneNode(true);
+        let clonePiece = selectedPiece.cloneNode(true);
         clonePiece.setAttribute('alreadyMoved', true);
         const initialCoordinates = selectedPiece.parentNode.id;
+        clonePiece = setupEnPassant(clonePiece, clonePiece.attributes.player.value, event.target.id);
         selectedPiece.parentNode.removeChild(selectedPiece);
         const elementToRemove = event.target.firstChild;
+
+        if (event.target.attributes.specialMove && event.target.attributes.specialMove.value) {
+            if (event.target.attributes.specialMove.value === 'enPassant') {
+                enPassant(event.target.id, 'white');
+            }
+        }
 
         if (elementToRemove) {
             const mapPiecesToScore = { pawn: 1, knight: 3, bishop: 3, rook: 5, queen: 9, king: 0 };
@@ -135,6 +142,7 @@ const changeActivePlayer = () => {
         .sort((a, b) => a.attributes['active-player'].value === 'true' ? -1 : 1);
     players[0].setAttribute('active-player', false);
     players[1].setAttribute('active-player', true);
+    removeEnPassant(players[1].textContent.substr(0, 8).split(' ').join('-').toLowerCase());
 }
 
 const removeSelectedPiece = () => {
@@ -240,8 +248,23 @@ const highlightPawnAvailableMoves = (player, coordinates, alreadyMoved) => {
         .map(file => `${file}${getMoveRankCoordinates(startRank, 1, player)}`)
         .filter(coordinates => getPieceFromCoordinates(coordinates) !== null)
         .filter(coordinates => getPlayerFromCoordinates(coordinates) !== player);
+
+    const enPassantMoves = [
+            getMoveFileCoordinates(startFile, 1, player),
+            getMoveFileCoordinates(startFile, -1, player),
+        ]
+        .map(file => `${file}${startRank}`)
+        .filter(square => {
+            const piece = getPieceObjFromCoordinates(square);
+            return piece &&
+                piece.attributes.canExecuteEnPassant &&
+                piece.attributes.canExecuteEnPassant.value === 'true';
+        })
+        .map(square => `${square.split('')[0]}${Number.parseInt(square.split('')[1])+1}`);
+
     availableMovementMoves.forEach(square => highlightSquare(square));
     availableAttackMoves.forEach(square => highlightSquare(square));
+    enPassantMoves.forEach(square => highlightSquare(square, 'enPassant'));
 };
 
 const highlightKnightAvailableMoves = (player, coordinates) => {
@@ -339,8 +362,6 @@ const highlightRookAvailableMoves = (player, coordinates, alreadyMoved) => {
     const squaresRight = getSquaresToHighlight('files', 'lessThan');
     const squares = [...squaresDown, ...squaresUp, ...squaresLeft, ...squaresRight];
 
-    console.log(player)
-    console.log(!alreadyMoved && player === 'white')
     if (!alreadyMoved && player === 'white') {
         const piece = getPieceObjFromCoordinates('e1');
         if (piece !== null && !piece.attributes.alreadyMoved && piece.attributes.piece.value === 'king') {
@@ -357,8 +378,6 @@ const highlightRookAvailableMoves = (player, coordinates, alreadyMoved) => {
                     arr.push(`${rank}1`);
                 }
             }
-
-
 
             if (arr.every(coordinates => getPieceFromCoordinates(coordinates) === null)) {
                 squares.push('e1')
@@ -418,12 +437,15 @@ const getPlayerFromCoordinates = coordinates => {
     return player;
 }
 
-const highlightSquare = (coordinates) => {
+const highlightSquare = (coordinates, specialMove) => {
     const element = document.getElementById(coordinates);
     if (element === null) {
         return;
     }
     element.setAttribute('highlighted', true);
+    if (specialMove) {
+        element.setAttribute('specialMove', specialMove);
+    }
 };
 
 const setUpSpecialMoves = (piece, initialCoordinates, coordinates, player) => {
@@ -455,6 +477,48 @@ const castling = (piece, initialCoordinates, coordinates, player) => {
         }
 
     }
+}
+
+const enPassant = (coordinates, player) => {
+    const file = coordinates.split('')[1];
+    const pieceFile = getMoveRankCoordinates(file, -1, player);
+    const pieceCoordinate = `${coordinates.split('')[0]}${pieceFile}`;
+
+    const square = document.getElementById(pieceCoordinate);
+    const cloneSquare = square.cloneNode(false);
+    square.parentNode.replaceChild(cloneSquare, square);
+}
+
+const setupEnPassant = (piece, player, coordinates) => {
+    const file = coordinates.split('')[1];
+    const newPiece = piece.cloneNode(true);
+    const canExecuteEnPassant = !(piece.attributes.canExecuteEnPassant);
+    if (
+        newPiece.attributes.piece.value == 'pawn' &&
+        player === 'black' &&
+        newPiece.attributes.alreadyMoved &&
+        newPiece.attributes.alreadyMoved.value === 'true' &&
+        file === '5'
+    ) {
+
+        newPiece.setAttribute('canExecuteEnPassant', canExecuteEnPassant);
+    }
+    return newPiece;
+}
+
+const removeEnPassant = (player) => {
+    if (player === 'player-1') {
+        return;
+    }
+    const piecesToRemoveEnPassant = document.querySelectorAll(`[canExecuteEnPassant='true']`);
+    const piecesToRemoveEnPassantArr = piecesToRemoveEnPassant ? Array.from(piecesToRemoveEnPassant) : [];
+    piecesToRemoveEnPassantArr.forEach(piece => {
+        const newPiece = piece.cloneNode(true);
+        newPiece.setAttribute('canExecuteEnPassant', 'false');
+        const parent = piece.parentNode;
+        parent.removeChild(piece);
+        parent.appendChild(newPiece);
+    });
 }
 
 const executeAITurn = () => {
