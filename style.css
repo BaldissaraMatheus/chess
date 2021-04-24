@@ -87,3 +87,8 @@
 .text-decoration-line-trough {
 	text-decoration: line-through;
 }
+
+.clickable {
+	cursor: pointer;
+	font-size: 24px;
+}
