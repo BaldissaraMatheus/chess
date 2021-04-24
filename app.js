@@ -2,17 +2,24 @@ const RANKS = new Array(8).fill(undefined).map((value, i) => String.fromCharCode
 const FILES = new Array(8).fill(undefined).map((_, index) => index + 1);
 //TODO RANKS E FILES ESTAO INVERTIDOS
 
+let observer = new MutationObserver(() => {});
 
 window.onload = () => {
     setupInitialPiecesPositions();
     addEventListenerOnSquares();
+    document.getElementById('start-ia-vs-ia').addEventListener('click', () => {
+        executeAITurn('white');
+        startAIvsAI();
+    });
     const player2 = document.getElementById('player-2')
 
     // https://stackoverflow.com/a/41425087
-    const observer = new MutationObserver(mutations => {
+    observer = new MutationObserver(mutations => {
         mutations.forEach(mutation => {
             if (mutation.type == "attributes" && player2.attributes['active-player'].value === 'true') {
-                executeAITurn();
+                setTimeout(() => executeAITurn('black'), 300);
+            } else if (isAIvsAIEnabled()) {
+                setTimeout(() => executeAITurn('white'), 300);
             }
         });
     });
@@ -21,6 +28,11 @@ window.onload = () => {
         attributes: true
     });
 };
+
+const isAIvsAIEnabled = () => {
+    return document.getElementById('start-ia-vs-ia').attributes.class 
+    && document.getElementById('start-ia-vs-ia').attributes.class.value.split(' ').includes('text-decoration-line-trough');
+}
 
 const setupInitialPiecesPositions = () => {
     const pawns = new Array(8)
@@ -90,7 +102,7 @@ const handleMouseUpOnSquare = event => {
             increaseActivePlayerScore(score);
             elementToRemove.parentNode.removeChild(elementToRemove);
             if (removedPiece === 'king') {
-                if (isPieceFromActivePlayer(elementToRemoveClone.attributes.player.value)) {
+                if (isPieceFromActivePlayer(elementToRemoveClone.attributes.player.value) && !isAIvsAIEnabled()) {
                     castling(clonePiece, initialCoordinates, event.target.id, clonePiece.attributes.player.value);
                     cleanHighlightedSquares();
                 } else {
@@ -134,6 +146,8 @@ const finishGame = () => {
     removeSelectedPiece();
     cleanHighlightedSquares();
     removeEventListenerOnSquares();
+    observer.disconnect();
+
     console.log(`${players[0].innerHTML.split(':')[0]} ganhou o jogo!`);
 }
 
@@ -523,21 +537,25 @@ const removeEnPassant = (player) => {
     });
 }
 
-const executeAITurn = () => {
-    const pieces = Array.from(document.querySelectorAll("[player='black']"));
+const executeAITurn = (player) => {
+    const pieces = Array.from(document.querySelectorAll(`[player='${player}']`));
     const length = pieces.length;
     const randomIndex = Math.floor(Math.random() * length);
     const pieceElement = pieces[randomIndex];
 
     const hightlightAvailableMovesFn = getHighlightAvailableMovesFnBySelectedPiece(pieceElement.attributes.piece.value);
-    hightlightAvailableMovesFn('black', pieceElement.parentElement.id, pieceElement.attributes.alreadyMoved && pieceElement.attributes.alreadyMoved.value);
+    hightlightAvailableMovesFn(player, pieceElement.parentElement.id, pieceElement.attributes.alreadyMoved && pieceElement.attributes.alreadyMoved.value);
 
     const highlightedSquares = Array.from(document.querySelectorAll("[highlighted = 'true']"));
     if (highlightedSquares.length === 0) {
-        return executeAITurn();
+        return executeAITurn(player);
     }
     const destSquare = highlightedSquares[highlightedSquares.length - 1];
 
     pieceElement.setAttribute('selected', true);
     handleMouseUpOnSquare({ target: destSquare });
+}
+
+const startAIvsAI = () => {
+    document.getElementById('start-ia-vs-ia').setAttribute('class', 'text-decoration-line-trough');
 }
