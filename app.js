@@ -76,6 +76,12 @@ const handleMouseUpOnSquare = event => {
         selectedPiece.parentNode.removeChild(selectedPiece);
         const elementToRemove = event.target.firstChild;
 
+        if (event.target.attributes.specialMove && event.target.attributes.specialMove.value) {
+            if (event.target.attributes.specialMove.value === 'enPassant') {
+                enPassant(event.target.id, 'white');
+            }
+        }
+
         if (elementToRemove) {
             const mapPiecesToScore = { pawn: 1, knight: 3, bishop: 3, rook: 5, queen: 9, king: 0 };
             const elementToRemoveClone = elementToRemove.cloneNode(true);
@@ -243,7 +249,6 @@ const highlightPawnAvailableMoves = (player, coordinates, alreadyMoved) => {
         .filter(coordinates => getPieceFromCoordinates(coordinates) !== null)
         .filter(coordinates => getPlayerFromCoordinates(coordinates) !== player);
 
-    console.log(getMoveFileCoordinates(startFile, 1, player));
     const enPassantMoves = [
             getMoveFileCoordinates(startFile, 1, player),
             getMoveFileCoordinates(startFile, -1, player),
@@ -257,11 +262,9 @@ const highlightPawnAvailableMoves = (player, coordinates, alreadyMoved) => {
         })
         .map(square => `${square.split('')[0]}${Number.parseInt(square.split('')[1])+1}`);
 
-    console.log("EnPassantMoves", enPassantMoves);
-
     availableMovementMoves.forEach(square => highlightSquare(square));
     availableAttackMoves.forEach(square => highlightSquare(square));
-    enPassantMoves.forEach(square => highlightSquare(square));
+    enPassantMoves.forEach(square => highlightSquare(square, 'enPassant'));
 };
 
 const highlightKnightAvailableMoves = (player, coordinates) => {
@@ -434,12 +437,15 @@ const getPlayerFromCoordinates = coordinates => {
     return player;
 }
 
-const highlightSquare = (coordinates) => {
+const highlightSquare = (coordinates, specialMove) => {
     const element = document.getElementById(coordinates);
     if (element === null) {
         return;
     }
     element.setAttribute('highlighted', true);
+    if (specialMove) {
+        element.setAttribute('specialMove', specialMove);
+    }
 };
 
 const setUpSpecialMoves = (piece, initialCoordinates, coordinates, player) => {
@@ -471,6 +477,16 @@ const castling = (piece, initialCoordinates, coordinates, player) => {
         }
 
     }
+}
+
+const enPassant = (coordinates, player) => {
+    const file = coordinates.split('')[1];
+    const pieceFile = getMoveRankCoordinates(file, -1, player);
+    const pieceCoordinate = `${coordinates.split('')[0]}${pieceFile}`;
+
+    const square = document.getElementById(pieceCoordinate);
+    const cloneSquare = square.cloneNode(false);
+    square.parentNode.replaceChild(cloneSquare, square);
 }
 
 const setupEnPassant = (piece, player, coordinates) => {
