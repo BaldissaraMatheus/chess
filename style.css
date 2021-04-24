@@ -1,3 +1,8 @@
+@font-face {
+	font-family: 'Crimson Text';
+	src: url(./assets/fonts/CrimsonText-Regular.ttf);
+}
+
 .bg {
 	background-color: #F8F8FF;
 }
