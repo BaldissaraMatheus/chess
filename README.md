@@ -2,4 +2,9 @@
 
 >__Disclaimer__: o termo foi escrito de forma errada propositalmente e permanecerá dessa forma
 
-![rainha](https://memepedia.com.br/wp-content/uploads/2020/12/meme-gambito-da-rainha-outros-jogos-3-768x768.jpg)
+## Jogar remotamente
+O jogo pode ser jogado a partir do endereço: https://vigorous-varahamihira-60e59f.netlify.app/
+
+## Jogar localmente
+1. Clonar repositório
+2. Abrir index.html pelo navegador
