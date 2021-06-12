@@ -87,11 +87,11 @@ const handleMouseUpOnSquare = event => {
         selectedPiece.parentNode.removeChild(selectedPiece);
         const elementToRemove = event.target.firstChild;
 
-        // TODO corrigir aqui
-        if (event.target.attributes.specialMove && event.target.attributes.specialMove.value) {
-            if (event.target.attributes.specialMove.value === 'enPassant') {
-                enPassant(event.target.id, 'white');
-            }
+        if (event.target.attributes.specialMove
+            && event.target.attributes.specialMove.value
+            && event.target.attributes.specialMove.value === 'enPassant'
+        ) {
+            enPassant(event.target.id, 'white');
         }
 
         if (elementToRemove) {
@@ -182,7 +182,6 @@ const handleMouseDownOnSquare = event => {
     }
     event.target.firstChild.setAttribute('selected', true);
     const pieceColor = event.target.firstChild.attributes.player.value;
-    //todo corrigir log
     console.log(`Peça na coordenada ${coordinates.toUpperCase()}: ${piece} ${pieceColor}`);
     if (!isPieceFromActivePlayer(pieceColor)) {
         return;
@@ -378,31 +377,33 @@ const highlightRookAvailableMoves = (player, coordinates, alreadyMoved) => {
     
     const currentPiece = getPieceFromCoordinates(coordinates);
 
-    // TODO corrigir aqui
+    // castling
     if (!alreadyMoved && player === 'white' && currentPiece === 'rook') {
         const piece = getPieceObjFromCoordinates('e1');
-        if (piece !== null && !piece.attributes.alreadyMoved && piece.attributes.piece.value === 'king') {
-            const arr = [];
+        if (piece !== null
+            && !piece.attributes.alreadyMoved
+            && piece.attributes.piece.value === 'king'
+        ) {
+            const piecesOnTheWay = [];
             const currentFile = coordinates.split('')[0];
             if (currentFile === 'a') {
                 for (let i = 1; i < FILES.indexOf('e'); i++) {
                     const rank = getMoveFileCoordinates('a', i, 'white');
-                    arr.push(`${rank}1`);
+                    piecesOnTheWay.push(`${rank}1`);
                 }
             } else {
                 for (let i = 7; i > FILES.indexOf('e')+1; i--) {
                     const rank = getMoveFileCoordinates('h', (8 - i) * -1, 'white');
-                    arr.push(`${rank}1`);
+                    piecesOnTheWay.push(`${rank}1`);
                 }
             }
-
-            if (arr.every(coordinates => getPieceFromCoordinates(coordinates) === null)) {
+            if (piecesOnTheWay.every(coordinates => getPieceFromCoordinates(coordinates) === null)) {
                 squares.push('e1')
             }
         }
     }
 
-    squares.forEach(quadrado => highlightSquare(quadrado));
+    squares.forEach(square => highlightSquare(square));
 };
 
 
