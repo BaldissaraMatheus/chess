@@ -1,4 +1,4 @@
-const FILES = new Array(8).fill(undefined).map((value, i) => String.fromCharCode('a'.charCodeAt(0) + i));
+const FILES = new Array(8).fill(undefined).map((_, i) => String.fromCharCode('a'.charCodeAt(0) + i));
 const RANKS = new Array(8).fill(undefined).map((_, index) => index + 1);
 
 let observer = new MutationObserver(() => {});
