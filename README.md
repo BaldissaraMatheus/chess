@@ -1,5 +1,6 @@
 # Chadrês
 Chess game made with javascript
+<br>
 ![image](https://user-images.githubusercontent.com/19363147/122656400-8ed6a880-d130-11eb-9de4-e3e67452e4ee.png)
 
 ## Play remotely
