@@ -1,4 +1,4 @@
-# Chadrês
+# Chess
 Chess game made with javascript
 <br>
 <br>
