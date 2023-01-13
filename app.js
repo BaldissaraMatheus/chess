@@ -74,7 +74,6 @@ const removeEventListenerOnSquares = () => {
 }
 
 const handleMouseUpOnSquare = event => {
-    // https://www.samanthaming.com/tidbits/19-2-ways-to-convert-to-boolean/
     const isSquareAvailableMove = event.target.attributes.highlighted &&
         !!event.target.attributes.highlighted.value;
 
@@ -147,8 +146,7 @@ const finishGame = () => {
     cleanHighlightedSquares();
     removeEventListenerOnSquares();
     observer.disconnect();
-
-    console.log(`${players[0].innerHTML.split(':')[0]} ganhou o jogo!`);
+    console.log(`${players[0].innerHTML.split(':')[0]} won the game!`);
 }
 
 const changeActivePlayer = () => {
@@ -173,16 +171,16 @@ const cleanHighlightedSquares = () => {
 };
 
 const handleMouseDownOnSquare = event => {
-    event.preventDefault() // Impede que tabuleiro seja arrastado junto
+    event.preventDefault();
     const coordinates = event.target.id;
     const piece = getPieceFromCoordinates(coordinates);
     if (!piece) {
-        console.log(`Peça na coordenada ${coordinates.toUpperCase()}: vazio`);
+        console.log(`Piece at coordinate ${coordinates.toUpperCase()}: none`);
         return;
     }
     event.target.firstChild.setAttribute('selected', true);
     const pieceColor = event.target.firstChild.attributes.player.value;
-    console.log(`Peça na coordenada ${coordinates.toUpperCase()}: ${piece} ${pieceColor}`);
+    console.log(`Piece at coordinate ${coordinates.toUpperCase()}: ${piece} ${pieceColor}`);
     if (!isPieceFromActivePlayer(pieceColor)) {
         return;
     }
@@ -238,7 +236,7 @@ const getHighlightAvailableMovesFnBySelectedPiece = (piece) => {
         king: highlightKingAvailableMoves,
     };
     return MapPiescesToAvailableMovesFn[piece] ||
-        (() => console.log('A peça selecionada não possui uma função de movimento implementada'));
+        (() => console.log('The selected piece does not have any move implemented'));
 };
 
 const highlightPawnAvailableMoves = (player, coordinates, alreadyMoved) => {
